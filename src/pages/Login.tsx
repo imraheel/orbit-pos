@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { db } from '../db';
+import { db, IUser } from '../db';
 import { useAuth } from '../store/useAuth';
-import { Lock, Delete } from 'lucide-react';
+import { Lock, Delete, ChevronDown, User } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -10,10 +10,25 @@ export const Login: React.FC = () => {
   const [pin, setPin] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [users, setUsers] = useState<IUser[]>([]);
+  const [selectedUserId, setSelectedUserId] = useState<number | string>('');
+  
   const login = useAuth((state) => state.login);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const allUsers = await db.users.toArray();
+      setUsers(allUsers);
+      if (allUsers.length > 0) {
+        setSelectedUserId(allUsers[0].id!);
+      }
+    };
+    fetchUsers();
+  }, []);
+
   const handleNumClick = (num: string) => {
+    if (loading) return;
     if (pin.length < 4) {
       setPin((prev) => prev + num);
       setError('');
@@ -21,25 +36,46 @@ export const Login: React.FC = () => {
   };
 
   const handleBackspace = () => {
+    if (loading) return;
     setPin((prev) => prev.slice(0, -1));
     setError('');
   };
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (loading) return;
+      
+      if (e.key >= '0' && e.key <= '9') {
+        handleNumClick(e.key);
+      } else if (e.key === 'Backspace') {
+        handleBackspace();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [loading, pin.length]);
+
   const handleLogin = async () => {
     if (pin.length !== 4) return;
+    if (!selectedUserId) {
+      setError('Please select a user');
+      return;
+    }
+    
     setLoading(true);
 
     try {
-      const user = await db.users.where('pinCode').equals(pin).first();
+      const user = users.find(u => u.id === Number(selectedUserId));
       
       // Simulate network delay for better UX feel
       await new Promise(resolve => setTimeout(resolve, 500));
 
-      if (user && user.isActive) {
+      if (user && user.pinCode === pin && user.isActive) {
         login(user);
         navigate('/');
       } else {
-        setError('Invalid PIN or inactive account');
+        setError('Invalid PIN');
         setPin('');
       }
     } catch (err) {
@@ -63,21 +99,62 @@ export const Login: React.FC = () => {
           <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-violet-600/20 blur-[120px] rounded-full" />
       </div>
 
-      <div className="w-full max-w-md z-10 p-4">
+      <div className="w-full max-w-4xl z-10 p-4">
         <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="rounded-3xl bg-white/95 backdrop-blur-xl shadow-2xl overflow-hidden border border-white/20"
+            className="rounded-3xl bg-white/95 backdrop-blur-xl shadow-2xl overflow-hidden border border-white/20 grid md:grid-cols-2"
         >
-            <div className="p-8 pb-6 flex flex-col items-center border-b border-slate-100">
-                <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-blue-600 text-white shadow-lg shadow-blue-200">
-                    <Lock size={32} strokeWidth={2.5} />
+            {/* Left Panel: Logo & User Selection */}
+            <div className="p-8 md:p-12 flex flex-col justify-center items-center bg-slate-50/50 border-r border-slate-100">
+                <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-3xl bg-blue-600 text-white shadow-xl shadow-blue-200">
+                    <Lock size={40} strokeWidth={2.5} />
                 </div>
-                <h1 className="text-2xl font-black text-slate-900 tracking-tight">Orbit POS</h1>
-                <p className="text-slate-500 font-medium mt-1">Enter your PIN to continue</p>
+                <h1 className="text-3xl font-black text-slate-900 tracking-tight text-center">Orbit POS</h1>
+                <p className="text-slate-500 font-medium mt-2 text-center mb-8">Secure Access Portal</p>
+                
+                {/* User Selection */}
+                <div className="w-full max-w-xs mb-8">
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Select User</label>
+                  <div className="relative">
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                      <User size={18} />
+                    </div>
+                    <select
+                      value={selectedUserId}
+                      onChange={(e) => {
+                        setSelectedUserId(Number(e.target.value));
+                        setPin('');
+                        setError('');
+                      }}
+                      className="w-full appearance-none rounded-xl border border-slate-200 bg-white py-3.5 pl-11 pr-10 text-sm font-bold text-slate-700 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all cursor-pointer hover:border-blue-300"
+                    >
+                      {users.map((user) => (
+                        <option key={user.id} value={user.id}>
+                          {user.username}
+                        </option>
+                      ))}
+                      {users.length === 0 && <option disabled>No users found</option>}
+                    </select>
+                    <div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-slate-500">
+                      <ChevronDown size={16} />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-auto text-center">
+                    <p className="text-xs font-medium text-slate-400">System Ready • v1.0.0</p>
+                    <p className="text-[10px] text-slate-300 mt-1">Default PIN: 1234</p>
+                </div>
             </div>
 
-            <div className="p-8 pt-6">
+            {/* Right Panel: PIN Entry */}
+            <div className="p-8 md:p-12 flex flex-col justify-center bg-white">
+                <div className="text-center mb-8">
+                    <h2 className="text-xl font-bold text-slate-800">Enter PIN</h2>
+                    <p className="text-sm text-slate-400 mt-1">Please enter your 4-digit security PIN</p>
+                </div>
+
                 {/* PIN Dots */}
                 <div className="mb-8 flex justify-center gap-6 h-8 items-center">
                     {[0, 1, 2, 3].map((i) => (
@@ -111,13 +188,13 @@ export const Login: React.FC = () => {
                 </AnimatePresence>
 
                 {/* Keypad */}
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-3 gap-4 max-w-[280px] mx-auto w-full">
                 {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
                     <button
                     key={num}
                     onClick={() => handleNumClick(num.toString())}
                     disabled={loading}
-                    className="flex h-20 items-center justify-center rounded-2xl bg-slate-50 text-3xl font-bold text-slate-700 shadow-sm border border-slate-100 hover:bg-white hover:border-blue-200 hover:text-blue-600 hover:shadow-md active:scale-95 transition-all disabled:opacity-50"
+                    className="flex h-16 sm:h-20 items-center justify-center rounded-2xl bg-slate-50 text-2xl sm:text-3xl font-bold text-slate-700 shadow-sm border border-slate-100 hover:bg-white hover:border-blue-200 hover:text-blue-600 hover:shadow-md active:scale-95 transition-all disabled:opacity-50"
                     >
                     {num}
                     </button>
@@ -128,23 +205,18 @@ export const Login: React.FC = () => {
                 <button
                     onClick={() => handleNumClick('0')}
                     disabled={loading}
-                    className="flex h-20 items-center justify-center rounded-2xl bg-slate-50 text-3xl font-bold text-slate-700 shadow-sm border border-slate-100 hover:bg-white hover:border-blue-200 hover:text-blue-600 hover:shadow-md active:scale-95 transition-all disabled:opacity-50"
+                    className="flex h-16 sm:h-20 items-center justify-center rounded-2xl bg-slate-50 text-2xl sm:text-3xl font-bold text-slate-700 shadow-sm border border-slate-100 hover:bg-white hover:border-blue-200 hover:text-blue-600 hover:shadow-md active:scale-95 transition-all disabled:opacity-50"
                 >
                     0
                 </button>
                 <button
                     onClick={handleBackspace}
                     disabled={loading}
-                    className="flex h-20 items-center justify-center rounded-2xl bg-slate-50 text-slate-400 shadow-sm border border-slate-100 hover:bg-red-50 hover:border-red-200 hover:text-red-600 hover:shadow-md active:scale-95 transition-all disabled:opacity-50"
+                    className="flex h-16 sm:h-20 items-center justify-center rounded-2xl bg-slate-50 text-slate-400 shadow-sm border border-slate-100 hover:bg-red-50 hover:border-red-200 hover:text-red-600 hover:shadow-md active:scale-95 transition-all disabled:opacity-50"
                 >
                     <Delete size={28} />
                 </button>
                 </div>
-            </div>
-            
-            <div className="bg-slate-50 p-4 text-center border-t border-slate-100">
-                <p className="text-xs font-medium text-slate-400">System Ready • v1.0.0</p>
-                <p className="text-[10px] text-slate-300 mt-1">Default PIN: 1234</p>
             </div>
         </motion.div>
       </div>
