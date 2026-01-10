@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { User } from 'lucide-react';
+import { User, Wifi } from 'lucide-react';
 import { useAuth } from '../store/useAuth';
 
 export const Topbar: React.FC = () => {
@@ -12,23 +12,32 @@ export const Topbar: React.FC = () => {
   }, []);
 
   return (
-    <header className="flex h-16 items-center justify-between bg-white px-6 shadow-sm">
-      <div>
-        <h2 className="text-lg font-semibold text-gray-800">
+    <header className="flex h-16 items-center justify-between border-b border-slate-200 bg-white px-6">
+      <div className="flex flex-col">
+        <h2 className="text-sm font-semibold text-slate-900">
           {date.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
         </h2>
-        <p className="text-sm text-gray-500">
+        <p className="text-xs text-slate-500">
           {date.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
         </p>
       </div>
 
-      <div className="flex items-center gap-3 rounded-full bg-gray-100 px-4 py-2">
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-blue-600">
-          <User size={18} />
+      <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 text-xs font-medium text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full">
+            <Wifi size={14} />
+            <span>Online</span>
         </div>
-        <div className="text-sm">
-          <p className="font-medium text-gray-700">{user?.username || 'Unknown User'}</p>
-          <p className="text-xs text-gray-500">Active</p>
+
+        <div className="h-8 w-px bg-slate-200" />
+
+        <div className="flex items-center gap-3">
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-100 text-blue-600">
+            <User size={18} />
+          </div>
+          <div className="hidden md:block">
+            <p className="text-sm font-medium text-slate-700">{user?.username || 'Staff'}</p>
+            <p className="text-xs text-slate-500">Active Session</p>
+          </div>
         </div>
       </div>
     </header>

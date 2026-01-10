@@ -6,11 +6,17 @@ import {
   Users, 
   AlertTriangle, 
   DollarSign,
-  Package
+  Package,
+  ArrowRight
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card';
+import { Button } from '../components/ui/Button';
+import { cn } from '../lib/utils';
+import { useNavigate } from 'react-router-dom';
 
 export const Dashboard: React.FC = () => {
+  const navigate = useNavigate();
   const [stats, setStats] = useState({
     todaySales: 0,
     totalOrders: 0,
@@ -49,17 +55,27 @@ export const Dashboard: React.FC = () => {
   }, []);
 
   const statCards = [
-    { label: "Today's Sales", value: `$${stats.todaySales.toFixed(2)}`, icon: DollarSign, color: 'text-green-600', bg: 'bg-green-50' },
-    { label: 'Total Orders', value: stats.totalOrders, icon: ShoppingCart, color: 'text-blue-600', bg: 'bg-blue-50' },
-    { label: 'Total Customers', value: stats.totalCustomers, icon: Users, color: 'text-purple-600', bg: 'bg-purple-50' },
-    { label: 'Low Stock Items', value: stats.lowStockItems, icon: AlertTriangle, color: 'text-red-600', bg: 'bg-red-50' },
+    { label: "Today's Sales", value: `$${stats.todaySales.toFixed(2)}`, icon: DollarSign, color: 'text-emerald-600', bg: 'bg-emerald-50', border: 'border-emerald-100' },
+    { label: 'Total Orders', value: stats.totalOrders, icon: ShoppingCart, color: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-100' },
+    { label: 'Total Customers', value: stats.totalCustomers, icon: Users, color: 'text-violet-600', bg: 'bg-violet-50', border: 'border-violet-100' },
+    { label: 'Low Stock Items', value: stats.lowStockItems, icon: AlertTriangle, color: 'text-amber-600', bg: 'bg-amber-50', border: 'border-amber-100' },
   ];
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-black text-gray-800">Dashboard</h1>
-        <p className="text-gray-500">Welcome back! Here's what's happening today.</p>
+    <div className="space-y-8 p-6 max-w-[1600px] mx-auto">
+      <div className="flex items-center justify-between">
+        <div>
+            <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Dashboard</h1>
+            <p className="text-slate-500 mt-1">Overview of your store's performance today.</p>
+        </div>
+        <div className="flex gap-2">
+            <Button variant="outline" onClick={() => fetchStats()}>
+                Refresh
+            </Button>
+            <Button onClick={() => navigate('/pos')}>
+                Open POS
+            </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -69,73 +85,108 @@ export const Dashboard: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.1 }}
-            className="flex flex-col rounded-3xl border border-gray-100 bg-white p-6 shadow-sm transition-all hover:shadow-md"
           >
-            <div className={`mb-4 flex h-12 w-12 items-center justify-center rounded-2xl ${card.bg} ${card.color}`}>
-              <card.icon size={24} />
-            </div>
-            <p className="text-sm font-bold text-gray-400 uppercase tracking-wider">{card.label}</p>
-            <p className="mt-1 text-3xl font-black text-gray-800">{card.value}</p>
+            <Card className={cn("border transition-all hover:shadow-md", card.border)}>
+                <CardContent className="p-6">
+                    <div className="flex items-start justify-between">
+                        <div>
+                            <p className="text-sm font-medium text-slate-500 uppercase tracking-wide">{card.label}</p>
+                            <p className="mt-2 text-3xl font-bold text-slate-900">{card.value}</p>
+                        </div>
+                        <div className={cn("flex h-12 w-12 items-center justify-center rounded-xl", card.bg, card.color)}>
+                            <card.icon size={24} />
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
           </motion.div>
         ))}
       </div>
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         {/* Recent Orders */}
-        <div className="lg:col-span-2 rounded-3xl border border-gray-100 bg-white p-8 shadow-sm">
-          <div className="mb-6 flex items-center justify-between">
-            <h3 className="text-xl font-black text-gray-800">Recent Orders</h3>
-            <button className="text-sm font-bold text-blue-600 hover:underline">View All History</button>
-          </div>
-          <div className="space-y-4">
-            {recentOrders.map((order) => (
-              <div key={order.id} className="flex items-center justify-between rounded-2xl border border-gray-50 p-4 hover:bg-gray-50 transition-colors">
-                <div className="flex items-center gap-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gray-100 text-gray-500">
-                    <Package size={20} />
-                  </div>
-                  <div>
-                    <p className="font-bold text-gray-800">Order #{order.id}</p>
-                    <p className="text-xs text-gray-400">{new Date(order.createdAt).toLocaleTimeString()}</p>
-                  </div>
+        <Card className="lg:col-span-2 border-slate-200">
+            <CardHeader className="flex flex-row items-center justify-between">
+                <CardTitle className="text-xl">Recent Orders</CardTitle>
+                <Button variant="ghost" size="sm" onClick={() => navigate('/history')} className="text-blue-600 hover:bg-blue-50">
+                    View All <ArrowRight size={16} className="ml-2" />
+                </Button>
+            </CardHeader>
+            <CardContent>
+                <div className="space-y-4">
+                    {recentOrders.map((order) => (
+                    <div key={order.id} className="flex items-center justify-between rounded-xl border border-slate-100 p-4 hover:bg-slate-50 hover:border-slate-200 transition-all">
+                        <div className="flex items-center gap-4">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-500">
+                            <Package size={20} />
+                        </div>
+                        <div>
+                            <p className="font-bold text-slate-800">Order #{order.id}</p>
+                            <div className="flex items-center gap-2 text-xs text-slate-500">
+                                <span>{new Date(order.createdAt).toLocaleTimeString()}</span>
+                                <span>•</span>
+                                <span>{order.items.length} items</span>
+                            </div>
+                        </div>
+                        </div>
+                        <div className="text-right">
+                        <p className="font-bold text-slate-900">${order.total.toFixed(2)}</p>
+                        <span className="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/20">
+                            Completed
+                        </span>
+                        </div>
+                    </div>
+                    ))}
+                    {recentOrders.length === 0 && (
+                    <div className="py-12 text-center text-slate-400">
+                        <Package size={48} className="mx-auto mb-3 opacity-20" />
+                        <p>No orders yet today.</p>
+                    </div>
+                    )}
                 </div>
-                <div className="text-right">
-                  <p className="font-black text-gray-900">${order.total.toFixed(2)}</p>
-                  <p className="text-xs text-green-500 font-bold">Completed</p>
-                </div>
-              </div>
-            ))}
-            {recentOrders.length === 0 && (
-              <div className="py-12 text-center text-gray-400">
-                <p>No orders yet today.</p>
-              </div>
-            )}
-          </div>
-        </div>
+            </CardContent>
+        </Card>
 
         {/* Quick Actions or Tips */}
         <div className="space-y-6">
-           <div className="rounded-3xl bg-blue-600 p-8 text-white shadow-xl shadow-blue-100">
-              <h3 className="text-xl font-black">Sales Goal</h3>
-              <p className="mt-2 text-blue-100">You've reached 85% of your daily goal. Keep it up!</p>
-              <div className="mt-6 h-3 w-full rounded-full bg-blue-500/50">
-                <div className="h-full w-[85%] rounded-full bg-white shadow-sm shadow-blue-400"></div>
-              </div>
-           </div>
+           <Card className="bg-blue-600 text-white border-blue-500 shadow-lg shadow-blue-200">
+              <CardContent className="p-8">
+                <h3 className="text-xl font-bold mb-2">Daily Goal</h3>
+                <p className="text-blue-100 mb-6">You've reached 85% of your daily sales goal. Keep pushing!</p>
+                <div className="h-3 w-full rounded-full bg-blue-900/30">
+                    <motion.div 
+                        initial={{ width: 0 }}
+                        animate={{ width: "85%" }}
+                        transition={{ duration: 1, ease: "easeOut" }}
+                        className="h-full rounded-full bg-white shadow-sm" 
+                    />
+                </div>
+                <div className="mt-2 flex justify-between text-xs text-blue-200 font-medium">
+                    <span>$0</span>
+                    <span>Goal: $1000</span>
+                </div>
+              </CardContent>
+           </Card>
            
-           <div className="rounded-3xl border border-gray-100 bg-white p-8 shadow-sm">
-              <h3 className="text-lg font-black text-gray-800 mb-4">Popular Actions</h3>
-              <div className="grid grid-cols-1 gap-3">
-                <button className="flex items-center gap-3 rounded-2xl border border-gray-100 p-4 font-bold text-gray-700 hover:bg-gray-50 transition-all">
-                  <TrendingUp size={20} className="text-blue-600" />
-                  Inventory Report
+           <Card>
+              <CardHeader>
+                  <CardTitle className="text-lg">Quick Actions</CardTitle>
+              </CardHeader>
+              <CardContent className="grid gap-3">
+                <button onClick={() => navigate('/inventory')} className="flex items-center gap-3 rounded-xl border border-slate-100 p-4 font-medium text-slate-700 hover:bg-slate-50 hover:border-slate-200 transition-all text-left">
+                  <div className="h-8 w-8 rounded-lg bg-violet-100 text-violet-600 flex items-center justify-center">
+                    <TrendingUp size={18} />
+                  </div>
+                  <span>Inventory Report</span>
                 </button>
-                <button className="flex items-center gap-3 rounded-2xl border border-gray-100 p-4 font-bold text-gray-700 hover:bg-gray-50 transition-all">
-                  <DollarSign size={20} className="text-green-600" />
-                  Settlement
+                <button className="flex items-center gap-3 rounded-xl border border-slate-100 p-4 font-medium text-slate-700 hover:bg-slate-50 hover:border-slate-200 transition-all text-left">
+                  <div className="h-8 w-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center">
+                    <DollarSign size={18} />
+                  </div>
+                  <span>End of Day Settlement</span>
                 </button>
-              </div>
-           </div>
+              </CardContent>
+           </Card>
         </div>
       </div>
     </div>

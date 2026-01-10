@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { db, ICategory } from '../../db';
 import { Plus, Edit2, Trash2, X, Save } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Button } from '../ui/Button';
+import { Input } from '../ui/Input';
+import { cn } from '../../lib/utils';
 
 export const CategoryList: React.FC = () => {
   const [categories, setCategories] = useState<ICategory[]>([]);
@@ -51,102 +54,102 @@ export const CategoryList: React.FC = () => {
   };
 
   return (
-    <div className="h-full overflow-auto p-1">
-      <div className="mb-4 flex justify-end">
-        <button
-          onClick={() => handleOpenModal()}
-          className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
-        >
-          <Plus size={20} />
+    <div className="h-full overflow-y-auto p-1">
+      <div className="mb-6 flex justify-end">
+        <Button onClick={() => handleOpenModal()}>
+          <Plus size={18} className="mr-2" />
           Add Category
-        </button>
+        </Button>
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {categories.map((category) => (
           <div
             key={category.id}
-            className="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md"
+            className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition-all hover:border-blue-300 hover:shadow-md"
           >
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4">
               <div
-                className="h-10 w-10 rounded-lg"
+                className="h-12 w-12 rounded-lg shadow-sm flex items-center justify-center text-white text-lg font-bold"
                 style={{ backgroundColor: category.color }}
-              />
-              <span className="font-medium text-gray-800">{category.name}</span>
+              >
+                {category.name.charAt(0).toUpperCase()}
+              </div>
+              <span className="font-semibold text-slate-800">{category.name}</span>
             </div>
-            <div className="flex gap-2">
-              <button
-                onClick={() => handleOpenModal(category)}
-                className="rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-blue-600"
-              >
-                <Edit2 size={18} />
-              </button>
-              <button
-                onClick={() => handleDelete(category.id!)}
-                className="rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-red-600"
-              >
-                <Trash2 size={18} />
-              </button>
+            <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              <Button variant="ghost" size="icon" onClick={() => handleOpenModal(category)} className="text-slate-400 hover:text-blue-600">
+                <Edit2 size={16} />
+              </Button>
+              <Button variant="ghost" size="icon" onClick={() => handleDelete(category.id!)} className="text-slate-400 hover:text-red-600">
+                <Trash2 size={16} />
+              </Button>
             </div>
           </div>
         ))}
+        
+        {/* Add New Card Placeholder */}
+        <button
+            onClick={() => handleOpenModal()}
+            className="flex h-[82px] items-center justify-center rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 text-slate-400 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-600 transition-all"
+        >
+            <div className="flex items-center gap-2 font-medium">
+                <Plus size={20} />
+                <span>New Category</span>
+            </div>
+        </button>
       </div>
 
       {/* Modal */}
       <AnimatePresence>
         {isModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="w-full max-w-sm rounded-xl bg-white p-6 shadow-xl"
+              className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl"
             >
-              <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-xl font-bold text-gray-800">
+              <div className="mb-6 flex items-center justify-between">
+                <h2 className="text-xl font-bold text-slate-900">
                   {editingCategory ? 'Edit Category' : 'New Category'}
                 </h2>
-                <button
-                  onClick={() => setIsModalOpen(false)}
-                  className="text-gray-400 hover:text-gray-600"
-                >
-                  <X size={24} />
-                </button>
+                <Button variant="ghost" size="icon" onClick={() => setIsModalOpen(false)}>
+                  <X size={20} />
+                </Button>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700">
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-slate-700">
                     Category Name
                   </label>
-                  <input
+                  <Input
                     type="text"
                     required
                     value={formData.name}
                     onChange={(e) =>
                       setFormData({ ...formData, name: e.target.value })
                     }
-                    className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none"
+                    placeholder="e.g. Beverages"
                   />
                 </div>
 
-                <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-slate-700">
                     Color Tag
                   </label>
-                  <div className="flex gap-2">
-                    {['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'].map(
+                  <div className="flex flex-wrap gap-3">
+                    {['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#6366f1', '#14b8a6'].map(
                       (color) => (
                         <button
                           key={color}
                           type="button"
                           onClick={() => setFormData({ ...formData, color })}
-                          className={`h-8 w-8 rounded-full border-2 ${
-                            formData.color === color
-                              ? 'border-gray-600 scale-110'
-                              : 'border-transparent'
-                          }`}
+                          className={cn(
+                              "h-8 w-8 rounded-full transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-400",
+                              formData.color === color ? "ring-2 ring-offset-2 ring-slate-900 scale-110" : ""
+                          )}
                           style={{ backgroundColor: color }}
                         />
                       )
@@ -154,21 +157,18 @@ export const CategoryList: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="mt-6 flex justify-end gap-3">
-                  <button
+                <div className="flex justify-end gap-3 pt-2">
+                  <Button
                     type="button"
+                    variant="ghost"
                     onClick={() => setIsModalOpen(false)}
-                    className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
                   >
                     Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
-                  >
-                    <Save size={18} />
+                  </Button>
+                  <Button type="submit">
+                    <Save size={18} className="mr-2" />
                     Save
-                  </button>
+                  </Button>
                 </div>
               </form>
             </motion.div>

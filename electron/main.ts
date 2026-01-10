@@ -16,6 +16,10 @@ function createWindow() {
   const distPath = process.env.DIST || '';
 
   win = new BrowserWindow({
+    minWidth: 1400,
+    width: 1400,
+    minHeight: 750,
+    height: 750,
     icon: path.join(publicPath, 'electron-vite.svg'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.cjs'),

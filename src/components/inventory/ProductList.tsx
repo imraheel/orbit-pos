@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { db, IProduct, ICategory } from '../../db';
-import { Plus, Edit2, Trash2, Search, X, Save } from 'lucide-react';
+import { Plus, Edit2, Trash2, Search, X, Save, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Button } from '../ui/Button';
+import { Input } from '../ui/Input';
+import { Badge } from '../ui/Badge';
+import { cn } from '../../lib/utils';
 
 export const ProductList: React.FC = () => {
   const [products, setProducts] = useState<IProduct[]>([]);
@@ -87,88 +91,98 @@ export const ProductList: React.FC = () => {
   };
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full flex-col bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
       {/* Toolbar */}
-      <div className="mb-4 flex flex-wrap gap-4">
-        <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-          <input
-            type="text"
-            placeholder="Search by name or barcode..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-lg border border-gray-200 py-2 pl-10 pr-4 focus:border-blue-500 focus:outline-none"
-          />
+      <div className="flex flex-wrap items-center justify-between gap-4 p-4 border-b border-slate-200 bg-slate-50/50">
+        <div className="flex flex-1 items-center gap-3">
+            <Input
+                icon={<Search size={18} />}
+                placeholder="Search products..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="max-w-xs bg-white"
+            />
+            
+            <select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value === 'all' ? 'all' : Number(e.target.value))}
+            className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-600 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+            >
+            <option value="all">All Categories</option>
+            {categories.map((c) => (
+                <option key={c.id} value={c.id}>{c.name}</option>
+            ))}
+            </select>
         </div>
-        
-        <select
-          value={selectedCategory}
-          onChange={(e) => setSelectedCategory(e.target.value === 'all' ? 'all' : Number(e.target.value))}
-          className="rounded-lg border border-gray-200 px-4 py-2 focus:border-blue-500 focus:outline-none"
-        >
-          <option value="all">All Categories</option>
-          {categories.map((c) => (
-            <option key={c.id} value={c.id}>{c.name}</option>
-          ))}
-        </select>
 
-        <button
-          onClick={() => handleOpenModal()}
-          className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
-        >
-          <Plus size={20} />
+        <Button onClick={() => handleOpenModal()}>
+          <Plus size={18} className="mr-2" />
           Add Product
-        </button>
+        </Button>
       </div>
 
       {/* Table */}
-      <div className="flex-1 overflow-auto rounded-xl border border-gray-200 bg-white shadow-sm">
-        <table className="w-full text-left text-sm text-gray-500">
-          <thead className="sticky top-0 bg-gray-50 text-xs uppercase text-gray-700 z-10">
+      <div className="flex-1 overflow-auto">
+        <table className="w-full text-left text-sm">
+          <thead className="sticky top-0 bg-slate-50 text-xs uppercase text-slate-500 font-semibold border-b border-slate-200">
             <tr>
-              <th className="px-6 py-3">Product Name</th>
-              <th className="px-6 py-3">Barcode</th>
-              <th className="px-6 py-3">Category</th>
-              <th className="px-6 py-3 text-right">Price</th>
-              <th className="px-6 py-3 text-right">Stock</th>
-              <th className="px-6 py-3 text-center">Actions</th>
+              <th className="px-6 py-4">Product Name</th>
+              <th className="px-6 py-4">Barcode</th>
+              <th className="px-6 py-4">Category</th>
+              <th className="px-6 py-4 text-right">Price</th>
+              <th className="px-6 py-4 text-right">Stock</th>
+              <th className="px-6 py-4 text-center">Actions</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-slate-100">
             {filteredProducts.map((product) => {
               const category = categories.find(c => c.id === product.categoryId);
               return (
-                <tr key={product.id} className="border-b bg-white hover:bg-gray-50">
-                  <td className="px-6 py-4 font-medium text-gray-900">{product.name}</td>
-                  <td className="px-6 py-4 font-mono text-gray-500">{product.barcode}</td>
+                <tr key={product.id} className="hover:bg-slate-50/50 transition-colors">
+                  <td className="px-6 py-4 font-medium text-slate-900">{product.name}</td>
+                  <td className="px-6 py-4 font-mono text-slate-500 text-xs">{product.barcode}</td>
                   <td className="px-6 py-4">
-                    <span 
-                        className="rounded-full px-2 py-1 text-xs font-medium"
+                    <Badge 
+                        variant="secondary"
                         style={{ 
-                            backgroundColor: (category?.color || '#e5e7eb') + '20', 
-                            color: category?.color || '#374151'
+                            backgroundColor: category?.color ? `${category.color}20` : undefined, 
+                            color: category?.color || undefined,
+                            borderColor: category?.color ? `${category.color}40` : undefined,
                         }}
+                        className="border"
                     >
                       {category?.name || 'Uncategorized'}
-                    </span>
+                    </Badge>
                   </td>
-                  <td className="px-6 py-4 text-right font-medium text-gray-900">${product.price.toFixed(2)}</td>
+                  <td className="px-6 py-4 text-right font-medium text-slate-900">${product.price.toFixed(2)}</td>
                   <td className="px-6 py-4 text-right">
-                    <span className={product.stock < 10 ? 'text-red-600 font-bold' : 'text-gray-900'}>
-                        {product.stock}
-                    </span>
+                    <div className="flex items-center justify-end gap-2">
+                        {product.stock < 10 && <AlertCircle size={14} className="text-amber-500" />}
+                        <span className={cn("font-medium", product.stock < 10 ? 'text-amber-600' : 'text-slate-700')}>
+                            {product.stock}
+                        </span>
+                    </div>
                   </td>
-                  <td className="flex justify-center gap-3 px-6 py-4">
-                    <button onClick={() => handleOpenModal(product)} className="text-blue-600 hover:text-blue-900">
-                      <Edit2 size={18} />
-                    </button>
-                    <button onClick={() => handleDelete(product.id!)} className="text-red-600 hover:text-red-900">
-                      <Trash2 size={18} />
-                    </button>
+                  <td className="px-6 py-4">
+                    <div className="flex justify-center gap-2">
+                        <Button variant="ghost" size="icon" onClick={() => handleOpenModal(product)} className="text-blue-600 hover:text-blue-700 hover:bg-blue-50">
+                        <Edit2 size={16} />
+                        </Button>
+                        <Button variant="ghost" size="icon" onClick={() => handleDelete(product.id!)} className="text-slate-400 hover:text-red-600 hover:bg-red-50">
+                        <Trash2 size={16} />
+                        </Button>
+                    </div>
                   </td>
                 </tr>
               );
             })}
+            {filteredProducts.length === 0 && (
+                <tr>
+                    <td colSpan={6} className="px-6 py-12 text-center text-slate-400">
+                        No products found matching your criteria.
+                    </td>
+                </tr>
+            )}
           </tbody>
         </table>
       </div>
@@ -176,51 +190,51 @@ export const ProductList: React.FC = () => {
       {/* Modal */}
       <AnimatePresence>
         {isModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="w-full max-w-lg rounded-xl bg-white p-6 shadow-xl"
+              className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl"
             >
-              <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-xl font-bold text-gray-800">
+              <div className="mb-6 flex items-center justify-between">
+                <h2 className="text-xl font-bold text-slate-900">
                   {editingProduct ? 'Edit Product' : 'Add Product'}
                 </h2>
-                <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600">
-                  <X size={24} />
-                </button>
+                <Button variant="ghost" size="icon" onClick={() => setIsModalOpen(false)}>
+                  <X size={20} />
+                </Button>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
-                    <div className="col-span-2">
-                        <label className="mb-1 block text-sm font-medium text-gray-700">Product Name</label>
-                        <input
+                    <div className="col-span-2 space-y-1">
+                        <label className="text-sm font-medium text-slate-700">Product Name</label>
+                        <Input
                             type="text"
                             required
                             value={formData.name}
                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                            className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none"
+                            placeholder="e.g. Wireless Mouse"
                         />
                     </div>
                     
-                    <div>
-                        <label className="mb-1 block text-sm font-medium text-gray-700">Barcode</label>
-                        <input
+                    <div className="space-y-1">
+                        <label className="text-sm font-medium text-slate-700">Barcode</label>
+                        <Input
                             type="text"
                             value={formData.barcode}
                             onChange={(e) => setFormData({ ...formData, barcode: e.target.value })}
-                            className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none"
+                            placeholder="Scan or type..."
                         />
                     </div>
                     
-                    <div>
-                        <label className="mb-1 block text-sm font-medium text-gray-700">Category</label>
+                    <div className="space-y-1">
+                        <label className="text-sm font-medium text-slate-700">Category</label>
                         <select
                             value={formData.categoryId}
                             onChange={(e) => setFormData({ ...formData, categoryId: Number(e.target.value) })}
-                            className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none"
+                            className="w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                         >
                             <option value={0} disabled>Select Category</option>
                             {categories.map(c => (
@@ -229,47 +243,42 @@ export const ProductList: React.FC = () => {
                         </select>
                     </div>
 
-                    <div>
-                        <label className="mb-1 block text-sm font-medium text-gray-700">Price ($)</label>
-                        <input
+                    <div className="space-y-1">
+                        <label className="text-sm font-medium text-slate-700">Price ($)</label>
+                        <Input
                             type="number"
                             min="0"
                             step="0.01"
                             required
                             value={formData.price}
                             onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
-                            className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none"
                         />
                     </div>
 
-                    <div>
-                        <label className="mb-1 block text-sm font-medium text-gray-700">Stock Level</label>
-                        <input
+                    <div className="space-y-1">
+                        <label className="text-sm font-medium text-slate-700">Stock Level</label>
+                        <Input
                             type="number"
                             min="0"
                             required
                             value={formData.stock}
                             onChange={(e) => setFormData({ ...formData, stock: Number(e.target.value) })}
-                            className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none"
                         />
                     </div>
                 </div>
 
-                <div className="mt-6 flex justify-end gap-3">
-                  <button
+                <div className="mt-8 flex justify-end gap-3">
+                  <Button
                     type="button"
+                    variant="ghost"
                     onClick={() => setIsModalOpen(false)}
-                    className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
                   >
                     Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
-                  >
-                    <Save size={18} />
+                  </Button>
+                  <Button type="submit">
+                    <Save size={18} className="mr-2" />
                     Save Product
-                  </button>
+                  </Button>
                 </div>
               </form>
             </motion.div>

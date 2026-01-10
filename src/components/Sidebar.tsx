@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, ShoppingCart, Package, Users, Settings, LogOut, History } from 'lucide-react';
-import { clsx } from 'clsx';
+import { cn } from '../lib/utils';
 import { useAuth } from '../store/useAuth';
 
 const navItems = [
@@ -23,9 +23,14 @@ export const Sidebar: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen w-64 flex-col bg-gray-900 text-white">
-      <div className="flex h-16 items-center justify-center border-b border-gray-800">
-        <h1 className="text-2xl font-bold tracking-wider text-blue-400">ORBIT POS</h1>
+    <aside className="flex h-screen w-64 flex-col border-r border-slate-200 bg-white">
+      <div className="flex h-16 items-center px-6 border-b border-slate-200">
+        <div className="flex items-center gap-2">
+          <div className="h-8 w-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-lg">
+            O
+          </div>
+          <h1 className="text-xl font-bold tracking-tight text-slate-900">Orbit POS</h1>
+        </div>
       </div>
       
       <nav className="flex-1 space-y-1 p-4">
@@ -34,29 +39,33 @@ export const Sidebar: React.FC = () => {
             key={item.to}
             to={item.to}
             className={({ isActive }) =>
-              clsx(
+              cn(
                 'flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors',
                 isActive
-                  ? 'bg-blue-600 text-white'
-                  : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+                  ? 'bg-blue-50 text-blue-700'
+                  : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
               )
             }
           >
-            <item.icon size={20} />
-            {item.label}
+            {({ isActive }) => (
+              <>
+                <item.icon size={20} className={isActive ? "text-blue-600" : "text-slate-400"} />
+                {item.label}
+              </>
+            )}
           </NavLink>
         ))}
       </nav>
 
-      <div className="border-t border-gray-800 p-4">
+      <div className="border-t border-slate-200 p-4">
         <button 
           onClick={handleLogout}
-          className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-red-400 hover:bg-gray-800 hover:text-red-300 transition-colors"
+          className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-slate-500 hover:bg-red-50 hover:text-red-600 transition-colors"
         >
           <LogOut size={20} />
           Logout
         </button>
       </div>
-    </div>
+    </aside>
   );
 };

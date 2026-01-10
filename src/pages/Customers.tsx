@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { db, ICustomer } from '../db';
 import { Plus, Edit2, Trash2, Search, User, Save, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Button } from '../components/ui/Button';
+import { Input } from '../components/ui/Input';
 
 export const Customers: React.FC = () => {
   const [customers, setCustomers] = useState<ICustomer[]>([]);
@@ -62,44 +64,42 @@ export const Customers: React.FC = () => {
   };
 
   return (
-    <div className="flex h-full flex-col p-6">
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-800">Customers</h1>
-        <button
-          onClick={() => handleOpenModal()}
-          className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
-        >
-          <Plus size={20} />
+    <div className="flex h-full flex-col p-6 space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+            <h1 className="text-2xl font-bold text-slate-900">Customers</h1>
+            <p className="text-sm text-slate-500">Manage customer profiles and view purchase history.</p>
+        </div>
+        <Button onClick={() => handleOpenModal()}>
+          <Plus size={18} className="mr-2" />
           Add Customer
-        </button>
+        </Button>
       </div>
 
-      <div className="mb-4 relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-        <input
-          type="text"
+      <div className="max-w-md">
+        <Input
+          icon={<Search size={18} />}
           placeholder="Search by name or phone..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full rounded-lg border border-gray-200 py-2 pl-10 pr-4 focus:border-blue-500 focus:outline-none"
         />
       </div>
 
-      <div className="flex-1 overflow-auto rounded-xl border border-gray-200 bg-white shadow-sm">
-        <table className="w-full text-left text-sm text-gray-500">
-          <thead className="sticky top-0 bg-gray-50 text-xs uppercase text-gray-700 z-10">
+      <div className="flex-1 overflow-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+        <table className="w-full text-left text-sm">
+          <thead className="sticky top-0 bg-slate-50 text-xs uppercase text-slate-500 font-semibold border-b border-slate-200">
             <tr>
-              <th className="px-6 py-3">Name</th>
-              <th className="px-6 py-3">Phone</th>
-              <th className="px-6 py-3">Email</th>
-              <th className="px-6 py-3 text-right">Total Spent</th>
-              <th className="px-6 py-3 text-center">Actions</th>
+              <th className="px-6 py-4">Name</th>
+              <th className="px-6 py-4">Phone</th>
+              <th className="px-6 py-4">Email</th>
+              <th className="px-6 py-4 text-right">Total Spent</th>
+              <th className="px-6 py-4 text-center">Actions</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-slate-100">
             {filteredCustomers.map((customer) => (
-              <tr key={customer.id} className="border-b bg-white hover:bg-gray-50">
-                <td className="px-6 py-4 font-medium text-gray-900">
+              <tr key={customer.id} className="hover:bg-slate-50/50 transition-colors">
+                <td className="px-6 py-4 font-medium text-slate-900">
                   <div className="flex items-center gap-3">
                     <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 text-blue-600">
                       <User size={16} />
@@ -107,21 +107,30 @@ export const Customers: React.FC = () => {
                     {customer.name}
                   </div>
                 </td>
-                <td className="px-6 py-4">{customer.phone || '-'}</td>
-                <td className="px-6 py-4">{customer.email || '-'}</td>
-                <td className="px-6 py-4 text-right font-medium text-green-600">
+                <td className="px-6 py-4 text-slate-600">{customer.phone || '-'}</td>
+                <td className="px-6 py-4 text-slate-600">{customer.email || '-'}</td>
+                <td className="px-6 py-4 text-right font-medium text-emerald-600">
                   ${customer.totalSpent.toFixed(2)}
                 </td>
-                <td className="flex justify-center gap-3 px-6 py-4">
-                  <button onClick={() => handleOpenModal(customer)} className="text-blue-600 hover:text-blue-900">
-                    <Edit2 size={18} />
-                  </button>
-                  <button onClick={() => handleDelete(customer.id!)} className="text-red-600 hover:text-red-900">
-                    <Trash2 size={18} />
-                  </button>
+                <td className="px-6 py-4">
+                  <div className="flex justify-center gap-2">
+                    <Button variant="ghost" size="icon" onClick={() => handleOpenModal(customer)} className="text-blue-600 hover:bg-blue-50">
+                        <Edit2 size={16} />
+                    </Button>
+                    <Button variant="ghost" size="icon" onClick={() => handleDelete(customer.id!)} className="text-slate-400 hover:text-red-600 hover:bg-red-50">
+                        <Trash2 size={16} />
+                    </Button>
+                  </div>
                 </td>
               </tr>
             ))}
+            {filteredCustomers.length === 0 && (
+                <tr>
+                    <td colSpan={5} className="px-6 py-12 text-center text-slate-400">
+                        No customers found.
+                    </td>
+                </tr>
+            )}
           </tbody>
         </table>
       </div>
@@ -129,69 +138,66 @@ export const Customers: React.FC = () => {
       {/* Modal */}
       <AnimatePresence>
         {isModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl"
+              className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl"
             >
-              <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-xl font-bold text-gray-800">
-                  {editingCustomer ? 'Edit Customer' : 'Add Customer'}
+              <div className="mb-6 flex items-center justify-between">
+                <h2 className="text-xl font-bold text-slate-900">
+                  {editingCustomer ? 'Edit Customer' : 'New Customer'}
                 </h2>
-                <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600">
-                  <X size={24} />
-                </button>
+                <Button variant="ghost" size="icon" onClick={() => setIsModalOpen(false)}>
+                  <X size={20} />
+                </Button>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700">Full Name</label>
-                  <input
+                <div className="space-y-1">
+                  <label className="text-sm font-medium text-slate-700">Full Name</label>
+                  <Input
                     type="text"
                     required
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none"
+                    placeholder="John Doe"
                   />
                 </div>
 
-                <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700">Phone Number</label>
-                  <input
+                <div className="space-y-1">
+                  <label className="text-sm font-medium text-slate-700">Phone Number</label>
+                  <Input
                     type="tel"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none"
+                    placeholder="(555) 123-4567"
                   />
                 </div>
 
-                <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700">Email Address</label>
-                  <input
+                <div className="space-y-1">
+                  <label className="text-sm font-medium text-slate-700">Email Address</label>
+                  <Input
                     type="email"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none"
+                    placeholder="john@example.com"
                   />
                 </div>
 
-                <div className="mt-6 flex justify-end gap-3">
-                  <button
+                <div className="mt-8 flex justify-end gap-3 pt-2">
+                  <Button
                     type="button"
+                    variant="ghost"
                     onClick={() => setIsModalOpen(false)}
-                    className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
                   >
                     Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
-                  >
-                    <Save size={18} />
+                  </Button>
+                  <Button type="submit">
+                    <Save size={18} className="mr-2" />
                     Save Customer
-                  </button>
+                  </Button>
                 </div>
               </form>
             </motion.div>
