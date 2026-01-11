@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { db, IUser } from '../db';
-import { Plus, Trash2, Edit2, Save, X } from 'lucide-react';
+import { Plus, Trash2, Edit2, Save, X, Search, ShieldCheck, ShieldAlert } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Button } from '../components/ui/Button';
+import { Input } from '../components/ui/Input';
+import { Badge } from '../components/ui/Badge';
 
 export const Settings: React.FC = () => {
   const [users, setUsers] = useState<IUser[]>([]);
+  const [search, setSearch] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<IUser | null>(null);
 
@@ -22,6 +26,10 @@ export const Settings: React.FC = () => {
   useEffect(() => {
     fetchUsers();
   }, []);
+
+  const filteredUsers = users.filter((user) =>
+    user.username.toLowerCase().includes(search.toLowerCase())
+  );
 
   const handleOpenModal = (user?: IUser) => {
     if (user) {
@@ -60,60 +68,74 @@ export const Settings: React.FC = () => {
   };
 
   return (
-    <div className="p-6">
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-800">User Management</h1>
-        <button
-          onClick={() => handleOpenModal()}
-          className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
-        >
-          <Plus size={20} />
+    <div className="flex h-full flex-col p-6 space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">User Management</h1>
+          <p className="text-sm text-slate-500">Manage access and permissions for your staff.</p>
+        </div>
+        <Button onClick={() => handleOpenModal()}>
+          <Plus size={18} className="mr-2" />
           Add User
-        </button>
+        </Button>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-        <table className="w-full text-left text-sm text-gray-500">
-          <thead className="bg-gray-50 text-xs uppercase text-gray-700">
+      <div className="max-w-md">
+        <Input
+          icon={<Search size={18} />}
+          placeholder="Search users..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </div>
+
+      <div className="flex-1 overflow-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+        <table className="w-full text-left text-sm">
+          <thead className="sticky top-0 bg-slate-50 text-xs uppercase text-slate-500 font-semibold border-b border-slate-200">
             <tr>
-              <th className="px-6 py-3">Username</th>
-              <th className="px-6 py-3">PIN Code</th>
-              <th className="px-6 py-3">Status</th>
-              <th className="px-6 py-3">Actions</th>
+              <th className="px-6 py-4">Username</th>
+              <th className="px-6 py-4">PIN Code</th>
+              <th className="px-6 py-4">Status</th>
+              <th className="px-6 py-4 text-center">Actions</th>
             </tr>
           </thead>
-          <tbody>
-            {users.map((user) => (
-              <tr key={user.id} className="border-b bg-white hover:bg-gray-50">
-                <td className="px-6 py-4 font-medium text-gray-900">{user.username}</td>
-                <td className="px-6 py-4 font-mono">****</td>
+          <tbody className="divide-y divide-slate-100">
+            {filteredUsers.map((user) => (
+              <tr key={user.id} className="hover:bg-slate-50/50 transition-colors">
+                <td className="px-6 py-4 font-medium text-slate-900">{user.username}</td>
+                <td className="px-6 py-4 font-mono text-slate-500 tracking-widest">••••</td>
                 <td className="px-6 py-4">
-                  <span
-                    className={`rounded-full px-2 py-1 text-xs font-semibold ${
-                      user.isActive
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-red-100 text-red-800'
-                    }`}
-                  >
-                    {user.isActive ? 'Active' : 'Inactive'}
-                  </span>
+                  <Badge variant={user.isActive ? "success" : "destructive"}>
+                    {user.isActive ? (
+                      <div className="flex items-center gap-1">
+                        <ShieldCheck size={12} /> Active
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-1">
+                        <ShieldAlert size={12} /> Inactive
+                      </div>
+                    )}
+                  </Badge>
                 </td>
-                <td className="flex gap-3 px-6 py-4">
-                  <button
-                    onClick={() => handleOpenModal(user)}
-                    className="text-blue-600 hover:text-blue-900"
-                  >
-                    <Edit2 size={18} />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(user.id!)}
-                    className="text-red-600 hover:text-red-900"
-                  >
-                    <Trash2 size={18} />
-                  </button>
+                <td className="px-6 py-4">
+                  <div className="flex justify-center gap-2">
+                    <Button variant="ghost" size="icon" onClick={() => handleOpenModal(user)} className="text-blue-600 hover:bg-blue-50">
+                      <Edit2 size={16} />
+                    </Button>
+                    <Button variant="ghost" size="icon" onClick={() => handleDelete(user.id!)} className="text-slate-400 hover:text-red-600 hover:bg-red-50">
+                      <Trash2 size={16} />
+                    </Button>
+                  </div>
                 </td>
               </tr>
             ))}
+            {filteredUsers.length === 0 && (
+              <tr>
+                <td colSpan={4} className="px-6 py-12 text-center text-slate-400">
+                  No users found.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
@@ -121,87 +143,73 @@ export const Settings: React.FC = () => {
       {/* Modal */}
       <AnimatePresence>
         {isModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl"
+              className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl"
             >
-              <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-xl font-bold text-gray-800">
+              <div className="mb-6 flex items-center justify-between">
+                <h2 className="text-xl font-bold text-slate-900">
                   {editingUser ? 'Edit User' : 'Add New User'}
                 </h2>
-                <button
-                  onClick={() => setIsModalOpen(false)}
-                  className="text-gray-400 hover:text-gray-600"
-                >
-                  <X size={24} />
-                </button>
+                <Button variant="ghost" size="icon" onClick={() => setIsModalOpen(false)}>
+                  <X size={20} />
+                </Button>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700">
-                    Username
-                  </label>
-                  <input
+                <div className="space-y-1">
+                  <label className="text-sm font-medium text-slate-700">Username</label>
+                  <Input
                     type="text"
                     required
                     value={formData.username}
-                    onChange={(e) =>
-                      setFormData({ ...formData, username: e.target.value })
-                    }
-                    className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none"
+                    onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                    placeholder="e.g. jdoe"
                   />
                 </div>
 
-                <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700">
-                    PIN Code (4 digits)
-                  </label>
-                  <input
+                <div className="space-y-1">
+                  <label className="text-sm font-medium text-slate-700">PIN Code (4 digits)</label>
+                  <Input
                     type="password"
                     maxLength={4}
                     required
                     value={formData.pinCode}
-                    onChange={(e) =>
-                      setFormData({ ...formData, pinCode: e.target.value })
-                    }
-                    className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none"
+                    onChange={(e) => setFormData({ ...formData, pinCode: e.target.value })}
+                    placeholder="••••"
                   />
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    id="isActive"
-                    checked={formData.isActive}
-                    onChange={(e) =>
-                      setFormData({ ...formData, isActive: e.target.checked })
-                    }
-                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                  />
-                  <label htmlFor="isActive" className="text-sm text-gray-700">
+                <div className="flex items-center gap-3 rounded-lg border border-slate-200 p-4">
+                  <div className="relative flex h-5 w-5 items-center justify-center">
+                    <input
+                      type="checkbox"
+                      id="isActive"
+                      checked={formData.isActive}
+                      onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
+                      className="peer h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                    />
+                  </div>
+                  <label htmlFor="isActive" className="text-sm font-medium text-slate-700 select-none cursor-pointer">
                     Active Account
                   </label>
                 </div>
 
-                <div className="mt-6 flex justify-end gap-3">
-                  <button
+                <div className="mt-8 flex justify-end gap-3 pt-2">
+                  <Button
                     type="button"
+                    variant="ghost"
                     onClick={() => setIsModalOpen(false)}
-                    className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
                   >
                     Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
-                  >
-                    <Save size={18} />
+                  </Button>
+                  <Button type="submit">
+                    <Save size={18} className="mr-2" />
                     Save User
-                  </button>
+                  </Button>
                 </div>
               </form>
             </motion.div>
