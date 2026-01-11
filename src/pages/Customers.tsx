@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 
+import { ConfirmDialog } from '../components/ui/ConfirmDialog';
+
 export const Customers: React.FC = () => {
   const [customers, setCustomers] = useState<ICustomer[]>([]);
   const [search, setSearch] = useState('');
@@ -16,6 +18,10 @@ export const Customers: React.FC = () => {
     email: '',
     totalSpent: 0,
   });
+
+  // Delete Confirmation State
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [customerToDelete, setCustomerToDelete] = useState<ICustomer | null>(null);
 
   const fetchCustomers = async () => {
     const data = await db.customers.toArray();
@@ -60,14 +66,21 @@ export const Customers: React.FC = () => {
     fetchCustomers();
   };
 
-  const handleDelete = async (customer: ICustomer) => {
+  const handleDelete = (customer: ICustomer) => {
     if (customer.name === 'Walk-in Customer') {
       alert('Cannot delete the default Walk-in Customer.');
       return;
     }
-    if (window.confirm('Delete this customer?')) {
-      await db.customers.delete(customer.id!);
+    setCustomerToDelete(customer);
+    setIsConfirmOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (customerToDelete?.id) {
+      await db.customers.delete(customerToDelete.id);
       fetchCustomers();
+      setIsConfirmOpen(false);
+      setCustomerToDelete(null);
     }
   };
 
@@ -228,6 +241,16 @@ export const Customers: React.FC = () => {
           </div>
         )}
       </AnimatePresence>
+
+      <ConfirmDialog
+        isOpen={isConfirmOpen}
+        title="Delete Customer"
+        description={`Are you sure you want to delete ${customerToDelete?.name}? This action cannot be undone.`}
+        confirmLabel="Delete"
+        variant="destructive"
+        onConfirm={confirmDelete}
+        onCancel={() => setIsConfirmOpen(false)}
+      />
     </div>
   );
 };

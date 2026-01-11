@@ -6,6 +6,7 @@ import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { Badge } from '../ui/Badge';
 import { cn } from '../../lib/utils';
+import { ConfirmDialog } from '../ui/ConfirmDialog';
 
 export const ProductList: React.FC = () => {
   const [products, setProducts] = useState<IProduct[]>([]);
@@ -23,6 +24,10 @@ export const ProductList: React.FC = () => {
     stock: 0,
     categoryId: 0,
   });
+
+  // Delete Confirmation State
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [productToDelete, setProductToDelete] = useState<IProduct | null>(null);
 
   const fetchData = async () => {
     const [allProducts, allCategories] = await Promise.all([
@@ -83,10 +88,17 @@ export const ProductList: React.FC = () => {
     fetchData();
   };
 
-  const handleDelete = async (id: number) => {
-    if (window.confirm('Delete this product?')) {
-      await db.products.delete(id);
+  const handleDelete = (product: IProduct) => {
+    setProductToDelete(product);
+    setIsConfirmOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (productToDelete?.id) {
+      await db.products.delete(productToDelete.id);
       fetchData();
+      setIsConfirmOpen(false);
+      setProductToDelete(null);
     }
   };
 
@@ -168,7 +180,7 @@ export const ProductList: React.FC = () => {
                         <Button variant="ghost" size="icon" onClick={() => handleOpenModal(product)} className="text-blue-600 hover:text-blue-700 hover:bg-blue-50">
                         <Edit2 size={16} />
                         </Button>
-                        <Button variant="ghost" size="icon" onClick={() => handleDelete(product.id!)} className="text-slate-400 hover:text-red-600 hover:bg-red-50">
+                        <Button variant="ghost" size="icon" onClick={() => handleDelete(product)} className="text-slate-400 hover:text-red-600 hover:bg-red-50">
                         <Trash2 size={16} />
                         </Button>
                     </div>
@@ -285,6 +297,16 @@ export const ProductList: React.FC = () => {
           </div>
         )}
       </AnimatePresence>
+
+      <ConfirmDialog
+        isOpen={isConfirmOpen}
+        title="Delete Product"
+        description={`Are you sure you want to delete ${productToDelete?.name}? This action cannot be undone.`}
+        confirmLabel="Delete"
+        variant="destructive"
+        onConfirm={confirmDelete}
+        onCancel={() => setIsConfirmOpen(false)}
+      />
     </div>
   );
 };

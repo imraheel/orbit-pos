@@ -5,12 +5,17 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { cn } from '../../lib/utils';
+import { ConfirmDialog } from '../ui/ConfirmDialog';
 
 export const CategoryList: React.FC = () => {
   const [categories, setCategories] = useState<ICategory[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<ICategory | null>(null);
   const [formData, setFormData] = useState({ name: '', color: '#3b82f6' });
+
+  // Delete Confirmation State
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [categoryToDelete, setCategoryToDelete] = useState<ICategory | null>(null);
 
   const fetchCategories = async () => {
     const data = await db.categories.toArray();
@@ -46,10 +51,17 @@ export const CategoryList: React.FC = () => {
     fetchCategories();
   };
 
-  const handleDelete = async (id: number) => {
-    if (window.confirm('Are you sure? This will not delete products in this category.')) {
-      await db.categories.delete(id);
+  const handleDelete = (category: ICategory) => {
+    setCategoryToDelete(category);
+    setIsConfirmOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (categoryToDelete?.id) {
+      await db.categories.delete(categoryToDelete.id);
       fetchCategories();
+      setIsConfirmOpen(false);
+      setCategoryToDelete(null);
     }
   };
 
@@ -81,7 +93,7 @@ export const CategoryList: React.FC = () => {
               <Button variant="ghost" size="icon" onClick={() => handleOpenModal(category)} className="text-slate-400 hover:text-blue-600">
                 <Edit2 size={16} />
               </Button>
-              <Button variant="ghost" size="icon" onClick={() => handleDelete(category.id!)} className="text-slate-400 hover:text-red-600">
+              <Button variant="ghost" size="icon" onClick={() => handleDelete(category)} className="text-slate-400 hover:text-red-600">
                 <Trash2 size={16} />
               </Button>
             </div>
@@ -175,6 +187,16 @@ export const CategoryList: React.FC = () => {
           </div>
         )}
       </AnimatePresence>
+
+      <ConfirmDialog
+        isOpen={isConfirmOpen}
+        title="Delete Category"
+        description={`Are you sure you want to delete ${categoryToDelete?.name}? This action cannot be undone.`}
+        confirmLabel="Delete"
+        variant="destructive"
+        onConfirm={confirmDelete}
+        onCancel={() => setIsConfirmOpen(false)}
+      />
     </div>
   );
 };

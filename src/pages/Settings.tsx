@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { Badge } from '../components/ui/Badge';
+import { ConfirmDialog } from '../components/ui/ConfirmDialog';
 
 export const Settings: React.FC = () => {
   const [users, setUsers] = useState<IUser[]>([]);
@@ -17,6 +18,10 @@ export const Settings: React.FC = () => {
     pinCode: '',
     isActive: true,
   });
+
+  // Delete Confirmation State
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<IUser | null>(null);
 
   const fetchUsers = async () => {
     const allUsers = await db.users.toArray();
@@ -64,14 +69,21 @@ export const Settings: React.FC = () => {
     fetchUsers();
   };
 
-  const handleDelete = async (user: IUser) => {
+  const handleDelete = (user: IUser) => {
     if (user.username === 'admin') {
       alert('Cannot delete the default admin user.');
       return;
     }
-    if (window.confirm('Are you sure you want to delete this user?')) {
-      await db.users.delete(user.id!);
+    setUserToDelete(user);
+    setIsConfirmOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (userToDelete?.id) {
+      await db.users.delete(userToDelete.id);
       fetchUsers();
+      setIsConfirmOpen(false);
+      setUserToDelete(null);
     }
   };
 
@@ -240,6 +252,16 @@ export const Settings: React.FC = () => {
           </div>
         )}
       </AnimatePresence>
+
+      <ConfirmDialog
+        isOpen={isConfirmOpen}
+        title="Delete User"
+        description={`Are you sure you want to delete ${userToDelete?.username}? This action cannot be undone.`}
+        confirmLabel="Delete"
+        variant="destructive"
+        onConfirm={confirmDelete}
+        onCancel={() => setIsConfirmOpen(false)}
+      />
     </div>
   );
 };
