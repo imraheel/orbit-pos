@@ -51,6 +51,10 @@ export const Settings: React.FC = () => {
     if (!formData.username || !formData.pinCode) return;
 
     if (editingUser && editingUser.id) {
+      if (editingUser.username === 'admin') {
+        alert('Cannot edit the default admin user.');
+        return;
+      }
       await db.users.update(editingUser.id, formData);
     } else {
       await db.users.add(formData);
@@ -60,9 +64,13 @@ export const Settings: React.FC = () => {
     fetchUsers();
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (user: IUser) => {
+    if (user.username === 'admin') {
+      alert('Cannot delete the default admin user.');
+      return;
+    }
     if (window.confirm('Are you sure you want to delete this user?')) {
-      await db.users.delete(id);
+      await db.users.delete(user.id!);
       fetchUsers();
     }
   };
@@ -100,7 +108,9 @@ export const Settings: React.FC = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
-            {filteredUsers.map((user) => (
+            {filteredUsers.map((user) => {
+              const isDefaultAdmin = user.username === 'admin';
+              return (
               <tr key={user.id} className="hover:bg-slate-50/50 transition-colors">
                 <td className="px-6 py-4 font-medium text-slate-900">{user.username}</td>
                 <td className="px-6 py-4 font-mono text-slate-500 tracking-widest">••••</td>
@@ -119,16 +129,30 @@ export const Settings: React.FC = () => {
                 </td>
                 <td className="px-6 py-4">
                   <div className="flex justify-center gap-2">
-                    <Button variant="ghost" size="icon" onClick={() => handleOpenModal(user)} className="text-blue-600 hover:bg-blue-50">
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      onClick={() => handleOpenModal(user)} 
+                      className="text-blue-600 hover:bg-blue-50"
+                      disabled={isDefaultAdmin}
+                      title={isDefaultAdmin ? "Cannot edit default admin" : "Edit"}
+                    >
                       <Edit2 size={16} />
                     </Button>
-                    <Button variant="ghost" size="icon" onClick={() => handleDelete(user.id!)} className="text-slate-400 hover:text-red-600 hover:bg-red-50">
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      onClick={() => handleDelete(user)} 
+                      className="text-slate-400 hover:text-red-600 hover:bg-red-50"
+                      disabled={isDefaultAdmin}
+                      title={isDefaultAdmin ? "Cannot delete default admin" : "Delete"}
+                    >
                       <Trash2 size={16} />
                     </Button>
                   </div>
                 </td>
               </tr>
-            ))}
+            )})}
             {filteredUsers.length === 0 && (
               <tr>
                 <td colSpan={4} className="px-6 py-12 text-center text-slate-400">

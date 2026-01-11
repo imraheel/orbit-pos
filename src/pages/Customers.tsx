@@ -47,6 +47,10 @@ export const Customers: React.FC = () => {
     if (!formData.name) return;
 
     if (editingCustomer && editingCustomer.id) {
+      if (editingCustomer.name === 'Walk-in Customer') {
+        alert('Cannot edit the default Walk-in Customer.');
+        return;
+      }
       await db.customers.update(editingCustomer.id, formData);
     } else {
       await db.customers.add(formData as ICustomer);
@@ -56,9 +60,13 @@ export const Customers: React.FC = () => {
     fetchCustomers();
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (customer: ICustomer) => {
+    if (customer.name === 'Walk-in Customer') {
+      alert('Cannot delete the default Walk-in Customer.');
+      return;
+    }
     if (window.confirm('Delete this customer?')) {
-      await db.customers.delete(id);
+      await db.customers.delete(customer.id!);
       fetchCustomers();
     }
   };
@@ -97,7 +105,9 @@ export const Customers: React.FC = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
-            {filteredCustomers.map((customer) => (
+            {filteredCustomers.map((customer) => {
+              const isDefaultCustomer = customer.name === 'Walk-in Customer';
+              return (
               <tr key={customer.id} className="hover:bg-slate-50/50 transition-colors">
                 <td className="px-6 py-4 font-medium text-slate-900">
                   <div className="flex items-center gap-3">
@@ -114,16 +124,30 @@ export const Customers: React.FC = () => {
                 </td>
                 <td className="px-6 py-4">
                   <div className="flex justify-center gap-2">
-                    <Button variant="ghost" size="icon" onClick={() => handleOpenModal(customer)} className="text-blue-600 hover:bg-blue-50">
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      onClick={() => handleOpenModal(customer)} 
+                      className="text-blue-600 hover:bg-blue-50"
+                      disabled={isDefaultCustomer}
+                      title={isDefaultCustomer ? "Cannot edit default customer" : "Edit"}
+                    >
                         <Edit2 size={16} />
                     </Button>
-                    <Button variant="ghost" size="icon" onClick={() => handleDelete(customer.id!)} className="text-slate-400 hover:text-red-600 hover:bg-red-50">
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      onClick={() => handleDelete(customer)} 
+                      className="text-slate-400 hover:text-red-600 hover:bg-red-50"
+                      disabled={isDefaultCustomer}
+                      title={isDefaultCustomer ? "Cannot delete default customer" : "Delete"}
+                    >
                         <Trash2 size={16} />
                     </Button>
                   </div>
                 </td>
               </tr>
-            ))}
+            )})}
             {filteredCustomers.length === 0 && (
                 <tr>
                     <td colSpan={5} className="px-6 py-12 text-center text-slate-400">
