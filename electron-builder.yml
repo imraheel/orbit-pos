@@ -1,0 +1,23 @@
+appId: com.orbitpos.app
+productName: Orbit POS
+directories:
+  output: release
+files:
+  - dist-electron
+  - dist-react
+  - package.json
+mac:
+  target:
+    - dmg
+    - zip
+  category: public.app-category.business
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  runAfterFinish: true

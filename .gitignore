@@ -11,6 +11,7 @@
 # production
 /dist-electron
 /dist-react
+/release
 
 # misc
 .DS_Store
