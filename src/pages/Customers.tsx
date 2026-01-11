@@ -87,7 +87,7 @@ export const Customers: React.FC = () => {
   };
 
   return (
-    <div className="flex h-full flex-col p-6 space-y-6">
+    <div className="flex h-full flex-col space-y-6">
       <div className="flex items-center justify-between">
         <div>
             <h1 className="text-2xl font-bold text-slate-900">Customers</h1>

@@ -8,7 +8,7 @@ export const Inventory: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'products' | 'categories'>('products');
 
   return (
-    <div className="flex h-full flex-col gap-6">
+    <div className="flex h-full flex-col space-y-6">
       <div className="flex items-center justify-between">
         <div>
             <h1 className="text-2xl font-bold text-slate-900">Inventory Management</h1>
