@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { useCart } from '../../store/useCart';
-import { db, IOrder, IOrderItem } from '../../db';
+import { db, IOrder, IOrderItem, ICustomer } from '../../db';
 import { useAuth } from '../../store/useAuth';
-import { X, CheckCircle2, Banknote, CreditCard, Loader2 } from 'lucide-react';
+import { X, CheckCircle2, Banknote, CreditCard, Loader2, User, UserPlus } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../ui/Button';
 import { cn } from '../../lib/utils';
 import { useSettings } from '../../store/useSettings';
+import { Input } from '../ui/Input';
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -15,7 +16,7 @@ interface CheckoutModalProps {
 }
 
 export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, onSuccess }) => {
-  const { items, customer, total, subtotal, tax, clearCart } = useCart();
+  const { items, customer, setCustomer, total, subtotal, tax, clearCart } = useCart();
   const { currencySymbol } = useSettings();
   const user = useAuth((state) => state.user);
   const [paymentMethod, setPaymentMethod] = useState<'cash' | 'card'>('cash');
@@ -23,8 +24,41 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
+  // Simplified Customer State
+  const [phoneInput, setPhoneInput] = useState('');
+  const [nameInput, setNameInput] = useState('');
+  const [showNameInput, setShowNameInput] = useState(false);
+
   const finalTotal = total();
   const change = amountReceived ? Number(amountReceived) - finalTotal : 0;
+
+  const handlePhoneBlur = async () => {
+    if (!phoneInput.trim()) return;
+    
+    // Auto-search on blur
+    const existing = await db.customers.where('phone').equals(phoneInput.trim()).first();
+    if (existing) {
+        setCustomer(existing);
+        setPhoneInput('');
+        setNameInput('');
+        setShowNameInput(false);
+    } else {
+        // Not found, prepare for creation
+        // We do NOT set customer to null here necessarily, but the UI should show the inputs if no customer is selected
+        // If a customer was already selected, and user types a new number that isn't found, 
+        // we might want to clear the selection or just switch context. 
+        // Let's assume if they are typing in the phone box, they want to switch.
+        setCustomer(null);
+        setShowNameInput(true);
+    }
+  };
+
+  const handleRemoveCustomer = () => {
+      setCustomer(null);
+      setPhoneInput('');
+      setNameInput('');
+      setShowNameInput(false);
+  };
 
   const handleCompleteOrder = async () => {
     if (paymentMethod === 'cash' && Number(amountReceived) < finalTotal) {
@@ -32,9 +66,31 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
       return;
     }
 
+    // Validation for new customer
+    if (!customer && showNameInput && (!nameInput || !phoneInput)) {
+        alert('Please enter customer name or clear phone number for Walk-in.');
+        return;
+    }
+
     setIsProcessing(true);
 
     try {
+      let orderCustomerId = customer?.id;
+
+      // Create new customer if needed
+      if (!customer && showNameInput && phoneInput && nameInput) {
+           const existing = await db.customers.where('phone').equals(phoneInput.trim()).first();
+           if (existing) {
+               orderCustomerId = existing.id;
+           } else {
+               orderCustomerId = await db.customers.add({
+                   name: nameInput,
+                   phone: phoneInput.trim(),
+                   totalSpent: 0
+               } as ICustomer);
+           }
+      }
+
       const orderItems: IOrderItem[] = items.map(item => ({
         productId: item.id!,
         productName: item.name,
@@ -44,7 +100,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
       }));
 
       const order: IOrder = {
-        customerId: customer?.id,
+        customerId: orderCustomerId,
         userId: user?.id!,
         items: orderItems,
         subtotal: subtotal(),
@@ -70,10 +126,13 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
       }
 
       // 3. Update Customer Total Spent
-      if (customer?.id) {
-        await db.customers.update(customer.id, {
-          totalSpent: customer.totalSpent + finalTotal
-        });
+      if (orderCustomerId) {
+        const currentCustomer = await db.customers.get(orderCustomerId);
+        if (currentCustomer) {
+            await db.customers.update(orderCustomerId, {
+                totalSpent: currentCustomer.totalSpent + finalTotal
+            });
+        }
       }
 
       setIsSuccess(true);
@@ -81,6 +140,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
         clearCart();
         setIsSuccess(false);
         setAmountReceived('');
+        setPhoneInput('');
+        setNameInput('');
+        setShowNameInput(false);
         onSuccess();
       }, 2000);
 
@@ -114,31 +176,95 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
             </div>
 
             <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
-              {/* Order Summary */}
-              <div className="rounded-xl bg-slate-50 p-6 border border-slate-100 h-fit">
-                <h3 className="mb-4 text-sm font-bold text-slate-500 uppercase tracking-wider">Order Summary</h3>
-                <div className="max-h-60 overflow-y-auto space-y-3 pr-2 mb-4 scrollbar-thin">
-                  {items.map(item => (
-                    <div key={item.id} className="flex justify-between text-sm">
-                      <span className="text-slate-600 font-medium">{item.quantity}x <span className="text-slate-800">{item.name}</span></span>
-                      <span className="font-bold text-slate-700">{currencySymbol}{(item.price * item.quantity).toFixed(2)}</span>
+              {/* Left Column: Customer & Summary */}
+              <div className="space-y-6">
+                  {/* Customer Section */}
+                  <div className="rounded-xl border border-slate-200 p-4">
+                      <h3 className="mb-3 text-sm font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2">
+                          <User size={16} /> Customer
+                      </h3>
+                      
+                      {customer ? (
+                          <div className="flex items-center justify-between bg-blue-50 p-3 rounded-lg border border-blue-100">
+                              <div>
+                                  <p className="font-bold text-slate-900">{customer.name}</p>
+                                  <p className="text-xs text-slate-500">{customer.phone || 'No Phone'}</p>
+                              </div>
+                              <Button variant="ghost" size="sm" onClick={handleRemoveCustomer} className="text-blue-600 hover:text-blue-800 h-8 px-2">
+                                  Change
+                              </Button>
+                          </div>
+                      ) : (
+                          <div className="space-y-3">
+                              <div className="space-y-1">
+                                  <label className="text-xs font-medium text-slate-500">Phone Number</label>
+                                  <Input 
+                                    placeholder="Enter phone to search..." 
+                                    value={phoneInput}
+                                    onChange={(e) => setPhoneInput(e.target.value)}
+                                    onBlur={handlePhoneBlur}
+                                    onKeyDown={(e) => e.key === 'Enter' && handlePhoneBlur()}
+                                  />
+                              </div>
+
+                              <AnimatePresence>
+                                {showNameInput && (
+                                    <motion.div 
+                                        initial={{ opacity: 0, height: 0 }}
+                                        animate={{ opacity: 1, height: 'auto' }}
+                                        exit={{ opacity: 0, height: 0 }}
+                                        className="space-y-1 overflow-hidden"
+                                    >
+                                        <label className="text-xs font-medium text-slate-500">Full Name (New Customer)</label>
+                                        <Input 
+                                            placeholder="Enter customer name..." 
+                                            value={nameInput}
+                                            onChange={(e) => setNameInput(e.target.value)}
+                                            autoFocus
+                                        />
+                                        <p className="text-xs text-blue-600 mt-1">
+                                            <UserPlus size={12} className="inline mr-1"/>
+                                            New customer will be created on checkout.
+                                        </p>
+                                    </motion.div>
+                                )}
+                              </AnimatePresence>
+                              
+                              {!showNameInput && !phoneInput && (
+                                  <p className="text-xs text-slate-400 italic">
+                                      Leave empty for Walk-in Customer
+                                  </p>
+                              )}
+                          </div>
+                      )}
+                  </div>
+
+                  {/* Order Summary */}
+                  <div className="rounded-xl bg-slate-50 p-6 border border-slate-100 h-fit">
+                    <h3 className="mb-4 text-sm font-bold text-slate-500 uppercase tracking-wider">Order Summary</h3>
+                    <div className="max-h-40 overflow-y-auto space-y-3 pr-2 mb-4 scrollbar-thin">
+                    {items.map(item => (
+                        <div key={item.id} className="flex justify-between text-sm">
+                        <span className="text-slate-600 font-medium">{item.quantity}x <span className="text-slate-800">{item.name}</span></span>
+                        <span className="font-bold text-slate-700">{currencySymbol}{(item.price * item.quantity).toFixed(2)}</span>
+                        </div>
+                    ))}
                     </div>
-                  ))}
-                </div>
-                <div className="border-t border-slate-200 pt-4 space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-slate-500">Subtotal</span>
-                    <span className="font-medium text-slate-700">{currencySymbol}{subtotal().toFixed(2)}</span>
+                    <div className="border-t border-slate-200 pt-4 space-y-2">
+                    <div className="flex justify-between text-sm">
+                        <span className="text-slate-500">Subtotal</span>
+                        <span className="font-medium text-slate-700">{currencySymbol}{subtotal().toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                        <span className="text-slate-500">Tax</span>
+                        <span className="font-medium text-slate-700">{currencySymbol}{tax().toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between text-2xl font-black text-slate-900 pt-2 border-t border-dashed border-slate-200 mt-2">
+                        <span>Total</span>
+                        <span className="text-blue-600">{currencySymbol}{finalTotal.toFixed(2)}</span>
+                    </div>
+                    </div>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-slate-500">Tax</span>
-                    <span className="font-medium text-slate-700">{currencySymbol}{tax().toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between text-2xl font-black text-slate-900 pt-2 border-t border-dashed border-slate-200 mt-2">
-                    <span>Total</span>
-                    <span className="text-blue-600">{currencySymbol}{finalTotal.toFixed(2)}</span>
-                  </div>
-                </div>
               </div>
 
               {/* Payment Input */}

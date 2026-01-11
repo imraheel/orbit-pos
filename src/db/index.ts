@@ -77,6 +77,15 @@ export class OrbitPOSDatabase extends Dexie {
   constructor() {
     super('OrbitPOSDB');
     
+    this.version(4).stores({
+      users: '++id, username, pinCode',
+      categories: '++id, name',
+      products: '++id, name, categoryId, barcode',
+      customers: '++id, name, &phone', // Unique phone
+      orders: '++id, customerId, status, createdAt, userId',
+      settings: '++id, &key'
+    });
+
     this.version(3).stores({
       users: '++id, username, pinCode',
       categories: '++id, name',

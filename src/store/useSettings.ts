@@ -9,7 +9,7 @@ interface SettingsState {
   updateSetting: (key: string, value: any) => Promise<void>;
 }
 
-export const useSettings = create<SettingsState>((set, get) => ({
+export const useSettings = create<SettingsState>((set) => ({
   currency: 'USD',
   currencySymbol: '$',
   isLoading: true,
