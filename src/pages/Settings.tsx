@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { db, IUser } from '../db';
-import { Plus, Trash2, Edit2, Save, X, Search, ShieldCheck, ShieldAlert } from 'lucide-react';
+import { Plus, Trash2, Edit2, Save, X, Search, ShieldCheck, ShieldAlert, Users, Settings as SettingsIcon, DollarSign } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { Badge } from '../components/ui/Badge';
 import { ConfirmDialog } from '../components/ui/ConfirmDialog';
+import { useSettings } from '../store/useSettings';
+import { cn } from '../lib/utils';
 
-export const Settings: React.FC = () => {
+const UserManagement: React.FC = () => {
   const [users, setUsers] = useState<IUser[]>([]);
   const [search, setSearch] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -91,8 +93,8 @@ export const Settings: React.FC = () => {
     <div className="flex h-full flex-col p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">User Management</h1>
-          <p className="text-sm text-slate-500">Manage access and permissions for your staff.</p>
+          <h2 className="text-lg font-bold text-slate-900">User List</h2>
+          <p className="text-sm text-slate-500">Manage access and permissions.</p>
         </div>
         <Button onClick={() => handleOpenModal()}>
           <Plus size={18} className="mr-2" />
@@ -262,6 +264,98 @@ export const Settings: React.FC = () => {
         onConfirm={confirmDelete}
         onCancel={() => setIsConfirmOpen(false)}
       />
+    </div>
+  );
+};
+
+const SystemSettings: React.FC = () => {
+    const { currencySymbol, updateSetting, isLoading } = useSettings();
+    const [localSymbol, setLocalSymbol] = useState(currencySymbol);
+
+    useEffect(() => {
+        setLocalSymbol(currencySymbol);
+    }, [currencySymbol]);
+
+    const handleSave = async () => {
+        await updateSetting('currencySymbol', localSymbol);
+        alert('Settings saved!');
+    };
+
+    return (
+        <div className="flex h-full flex-col p-6 space-y-6">
+            <div>
+                <h2 className="text-lg font-bold text-slate-900">General Configuration</h2>
+                <p className="text-sm text-slate-500">Configure global application settings.</p>
+            </div>
+
+            <div className="max-w-2xl space-y-8">
+                <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+                    <h3 className="mb-4 text-base font-bold text-slate-900 flex items-center gap-2">
+                        <DollarSign size={18} className="text-blue-600" />
+                        Currency Settings
+                    </h3>
+                    
+                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-slate-700">Currency Symbol</label>
+                            <Input
+                                value={localSymbol}
+                                onChange={(e) => setLocalSymbol(e.target.value)}
+                                placeholder="$"
+                                maxLength={3}
+                            />
+                            <p className="text-xs text-slate-500">This symbol will be used across the application (e.g. $, €, £, ¥).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="flex justify-end">
+                    <Button onClick={handleSave} disabled={isLoading}>
+                        <Save size={18} className="mr-2" />
+                        Save Changes
+                    </Button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export const Settings: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<'users' | 'system'>('users');
+  const { fetchSettings } = useSettings();
+
+  useEffect(() => {
+    fetchSettings();
+  }, []);
+
+  return (
+    <div className="flex h-full flex-col">
+       <div className="flex items-center gap-6 border-b border-slate-200 px-6 bg-white pt-2">
+          <button
+             onClick={() => setActiveTab('users')}
+             className={cn(
+               "flex items-center gap-2 border-b-2 py-4 text-sm font-medium transition-colors",
+               activeTab === 'users' ? "border-blue-600 text-blue-600" : "border-transparent text-slate-500 hover:text-slate-700"
+             )}
+          >
+             <Users size={18} />
+             User Management
+          </button>
+          <button
+             onClick={() => setActiveTab('system')}
+             className={cn(
+               "flex items-center gap-2 border-b-2 py-4 text-sm font-medium transition-colors",
+               activeTab === 'system' ? "border-blue-600 text-blue-600" : "border-transparent text-slate-500 hover:text-slate-700"
+             )}
+          >
+             <SettingsIcon size={18} />
+             System Settings
+          </button>
+       </div>
+
+       <div className="flex-1 overflow-hidden bg-slate-50/50">
+          {activeTab === 'users' ? <UserManagement /> : <SystemSettings />}
+       </div>
     </div>
   );
 };

@@ -6,6 +6,7 @@ import { X, CheckCircle2, Banknote, CreditCard, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../ui/Button';
 import { cn } from '../../lib/utils';
+import { useSettings } from '../../store/useSettings';
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -15,6 +16,7 @@ interface CheckoutModalProps {
 
 export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, onSuccess }) => {
   const { items, customer, total, subtotal, tax, clearCart } = useCart();
+  const { currencySymbol } = useSettings();
   const user = useAuth((state) => state.user);
   const [paymentMethod, setPaymentMethod] = useState<'cash' | 'card'>('cash');
   const [amountReceived, setAmountReceived] = useState<string>('');
@@ -119,22 +121,22 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
                   {items.map(item => (
                     <div key={item.id} className="flex justify-between text-sm">
                       <span className="text-slate-600 font-medium">{item.quantity}x <span className="text-slate-800">{item.name}</span></span>
-                      <span className="font-bold text-slate-700">${(item.price * item.quantity).toFixed(2)}</span>
+                      <span className="font-bold text-slate-700">{currencySymbol}{(item.price * item.quantity).toFixed(2)}</span>
                     </div>
                   ))}
                 </div>
                 <div className="border-t border-slate-200 pt-4 space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="text-slate-500">Subtotal</span>
-                    <span className="font-medium text-slate-700">${subtotal().toFixed(2)}</span>
+                    <span className="font-medium text-slate-700">{currencySymbol}{subtotal().toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-slate-500">Tax</span>
-                    <span className="font-medium text-slate-700">${tax().toFixed(2)}</span>
+                    <span className="font-medium text-slate-700">{currencySymbol}{tax().toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-2xl font-black text-slate-900 pt-2 border-t border-dashed border-slate-200 mt-2">
                     <span>Total</span>
-                    <span className="text-blue-600">${finalTotal.toFixed(2)}</span>
+                    <span className="text-blue-600">{currencySymbol}{finalTotal.toFixed(2)}</span>
                   </div>
                 </div>
               </div>
@@ -180,7 +182,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
                     >
                       <label className="mb-2 block text-sm font-bold text-slate-700">Amount Received</label>
                       <div className="relative">
-                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xl font-bold text-slate-400">$</span>
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xl font-bold text-slate-400">{currencySymbol}</span>
                         <input
                           type="number"
                           placeholder="0.00"
@@ -193,7 +195,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
                       {change > 0 && (
                         <div className="mt-4 flex justify-between rounded-lg bg-emerald-50 p-4 border border-emerald-100 text-emerald-700 font-bold shadow-sm">
                           <span>Change Due:</span>
-                          <span>${change.toFixed(2)}</span>
+                          <span>{currencySymbol}{change.toFixed(2)}</span>
                         </div>
                       )}
                     </motion.div>
@@ -207,7 +209,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
                   className="mt-8 w-full text-lg h-14 shadow-lg shadow-blue-200 hover:shadow-blue-300"
                 >
                   {isProcessing && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}
-                  {isProcessing ? 'Processing...' : `Pay $${finalTotal.toFixed(2)}`}
+                  {isProcessing ? 'Processing...' : `Pay ${currencySymbol}${finalTotal.toFixed(2)}`}
                 </Button>
               </div>
             </div>

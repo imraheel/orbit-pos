@@ -4,6 +4,7 @@ import { Plus, Edit2, Trash2, Search, User, Save, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
+import { useSettings } from '../store/useSettings';
 
 import { ConfirmDialog } from '../components/ui/ConfirmDialog';
 
@@ -12,6 +13,7 @@ export const Customers: React.FC = () => {
   const [search, setSearch] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState<ICustomer | null>(null);
+  const { currencySymbol } = useSettings();
   const [formData, setFormData] = useState<Partial<ICustomer>>({
     name: '',
     phone: '',
@@ -133,7 +135,7 @@ export const Customers: React.FC = () => {
                 <td className="px-6 py-4 text-slate-600">{customer.phone || '-'}</td>
                 <td className="px-6 py-4 text-slate-600">{customer.email || '-'}</td>
                 <td className="px-6 py-4 text-right font-medium text-emerald-600">
-                  ${customer.totalSpent.toFixed(2)}
+                  {currencySymbol}{customer.totalSpent.toFixed(2)}
                 </td>
                 <td className="px-6 py-4">
                   <div className="flex justify-center gap-2">

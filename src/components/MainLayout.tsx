@@ -1,9 +1,16 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
 import { Topbar } from './Topbar';
+import { useSettings } from '../store/useSettings';
 
 export const MainLayout: React.FC = () => {
+  const { fetchSettings } = useSettings();
+
+  useEffect(() => {
+    fetchSettings();
+  }, []);
+
   return (
     <div className="flex h-screen overflow-hidden bg-slate-50">
       <Sidebar />

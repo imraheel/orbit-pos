@@ -14,9 +14,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card'
 import { Button } from '../components/ui/Button';
 import { cn } from '../lib/utils';
 import { useNavigate } from 'react-router-dom';
+import { useSettings } from '../store/useSettings';
 
 export const Dashboard: React.FC = () => {
   const navigate = useNavigate();
+  const { currencySymbol } = useSettings();
   const [stats, setStats] = useState({
     todaySales: 0,
     totalOrders: 0,
@@ -55,7 +57,7 @@ export const Dashboard: React.FC = () => {
   }, []);
 
   const statCards = [
-    { label: "Today's Sales", value: `$${stats.todaySales.toFixed(2)}`, icon: DollarSign, color: 'text-emerald-600', bg: 'bg-emerald-50', border: 'border-emerald-100' },
+    { label: "Today's Sales", value: `${currencySymbol}${stats.todaySales.toFixed(2)}`, icon: DollarSign, color: 'text-emerald-600', bg: 'bg-emerald-50', border: 'border-emerald-100' },
     { label: 'Total Orders', value: stats.totalOrders, icon: ShoppingCart, color: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-100' },
     { label: 'Total Customers', value: stats.totalCustomers, icon: Users, color: 'text-violet-600', bg: 'bg-violet-50', border: 'border-violet-100' },
     { label: 'Low Stock Items', value: stats.lowStockItems, icon: AlertTriangle, color: 'text-amber-600', bg: 'bg-amber-50', border: 'border-amber-100' },
@@ -130,7 +132,7 @@ export const Dashboard: React.FC = () => {
                         </div>
                         </div>
                         <div className="text-right">
-                        <p className="font-bold text-slate-900">${order.total.toFixed(2)}</p>
+                        <p className="font-bold text-slate-900">{currencySymbol}{order.total.toFixed(2)}</p>
                         <span className="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/20">
                             Completed
                         </span>
@@ -162,8 +164,8 @@ export const Dashboard: React.FC = () => {
                     />
                 </div>
                 <div className="mt-2 flex justify-between text-xs text-blue-200 font-medium">
-                    <span>$0</span>
-                    <span>Goal: $1000</span>
+                    <span>{currencySymbol}0</span>
+                    <span>Goal: {currencySymbol}1000</span>
                 </div>
               </CardContent>
            </Card>

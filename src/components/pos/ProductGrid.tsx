@@ -4,6 +4,7 @@ import { Search, Tag, Package } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { Input } from '../ui/Input';
 import { Badge } from '../ui/Badge';
+import { useSettings } from '../../store/useSettings';
 
 interface ProductGridProps {
   onProductSelect: (product: IProduct) => void;
@@ -14,6 +15,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ onProductSelect }) => 
   const [categories, setCategories] = useState<ICategory[]>([]);
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<number | 'all'>('all');
+  const { currencySymbol } = useSettings();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -113,7 +115,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ onProductSelect }) => 
                 <h3 className="line-clamp-2 text-sm font-medium text-slate-700 group-hover:text-blue-700 transition-colors">
                   {product.name}
                 </h3>
-                <p className="mt-1 text-base font-bold text-slate-900">${product.price.toFixed(2)}</p>
+                <p className="mt-1 text-base font-bold text-slate-900">{currencySymbol}{product.price.toFixed(2)}</p>
               </div>
             </button>
           ))}

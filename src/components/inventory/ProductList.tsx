@@ -7,12 +7,14 @@ import { Input } from '../ui/Input';
 import { Badge } from '../ui/Badge';
 import { cn } from '../../lib/utils';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
+import { useSettings } from '../../store/useSettings';
 
 export const ProductList: React.FC = () => {
   const [products, setProducts] = useState<IProduct[]>([]);
   const [categories, setCategories] = useState<ICategory[]>([]);
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<number | 'all'>('all');
+  const { currencySymbol } = useSettings();
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<IProduct | null>(null);
@@ -166,7 +168,7 @@ export const ProductList: React.FC = () => {
                       {category?.name || 'Uncategorized'}
                     </Badge>
                   </td>
-                  <td className="px-6 py-4 text-right font-medium text-slate-900">${product.price.toFixed(2)}</td>
+                  <td className="px-6 py-4 text-right font-medium text-slate-900">{currencySymbol}{product.price.toFixed(2)}</td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end gap-2">
                         {product.stock < 10 && <AlertCircle size={14} className="text-amber-500" />}
@@ -256,7 +258,7 @@ export const ProductList: React.FC = () => {
                     </div>
 
                     <div className="space-y-1">
-                        <label className="text-sm font-medium text-slate-700">Price ($)</label>
+                        <label className="text-sm font-medium text-slate-700">Price ({currencySymbol})</label>
                         <Input
                             type="number"
                             min="0"

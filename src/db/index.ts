@@ -60,15 +60,32 @@ export interface IOrder {
   note?: string;
 }
 
+export interface ISettings {
+  id?: number;
+  key: string;
+  value: any;
+}
+
 export class OrbitPOSDatabase extends Dexie {
   users!: Table<IUser, number>;
   categories!: Table<ICategory, number>;
   products!: Table<IProduct, number>;
   customers!: Table<ICustomer, number>;
   orders!: Table<IOrder, number>;
+  settings!: Table<ISettings, number>;
 
   constructor() {
     super('OrbitPOSDB');
+    
+    this.version(3).stores({
+      users: '++id, username, pinCode',
+      categories: '++id, name',
+      products: '++id, name, categoryId, barcode',
+      customers: '++id, name, phone',
+      orders: '++id, customerId, status, createdAt, userId',
+      settings: '++id, &key'
+    });
+    
     this.version(2).stores({
       users: '++id, username, pinCode',
       categories: '++id, name',

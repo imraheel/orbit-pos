@@ -5,6 +5,7 @@ import { Trash2, Plus, Minus, UserPlus, X, CreditCard, PauseCircle, PlayCircle, 
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../ui/Button';
 import { Badge } from '../ui/Badge';
+import { useSettings } from '../../store/useSettings';
 
 interface CartSidebarProps {
   onCheckout: () => void;
@@ -12,6 +13,7 @@ interface CartSidebarProps {
 
 export const CartSidebar: React.FC<CartSidebarProps> = ({ onCheckout }) => {
   const { items, customer, setCustomer, updateQuantity, removeItem, clearCart, subtotal, tax, total, holdCart, heldCarts, resumeCart, deleteHeldCart } = useCart();
+  const { currencySymbol } = useSettings();
   const [customers, setCustomers] = useState<ICustomer[]>([]);
   const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
   const [isHeldCartsOpen, setIsHeldCartsOpen] = useState(false);
@@ -89,7 +91,7 @@ export const CartSidebar: React.FC<CartSidebarProps> = ({ onCheckout }) => {
             >
               <div className="flex-1 min-w-0">
                 <h3 className="text-sm font-semibold text-slate-800 truncate">{item.name}</h3>
-                <p className="text-sm font-bold text-blue-600">${item.price.toFixed(2)}</p>
+                <p className="text-sm font-bold text-blue-600">{currencySymbol}{item.price.toFixed(2)}</p>
               </div>
               
               <div className="flex items-center gap-3">
@@ -133,15 +135,15 @@ export const CartSidebar: React.FC<CartSidebarProps> = ({ onCheckout }) => {
         <div className="space-y-3 pb-6">
           <div className="flex justify-between text-sm text-slate-500">
             <span>Subtotal</span>
-            <span className="font-medium text-slate-900">${subtotal().toFixed(2)}</span>
+            <span className="font-medium text-slate-900">{currencySymbol}{subtotal().toFixed(2)}</span>
           </div>
           <div className="flex justify-between text-sm text-slate-500">
             <span>Tax (10%)</span>
-            <span className="font-medium text-slate-900">${tax().toFixed(2)}</span>
+            <span className="font-medium text-slate-900">{currencySymbol}{tax().toFixed(2)}</span>
           </div>
           <div className="flex justify-between border-t border-dashed border-slate-200 pt-3">
             <span className="text-base font-bold text-slate-800">Total</span>
-            <span className="text-2xl font-bold text-blue-600">${total().toFixed(2)}</span>
+            <span className="text-2xl font-bold text-blue-600">{currencySymbol}{total().toFixed(2)}</span>
           </div>
         </div>
 
@@ -196,7 +198,7 @@ export const CartSidebar: React.FC<CartSidebarProps> = ({ onCheckout }) => {
                             {hc.items.length} items
                         </Badge>
                         <Badge variant="outline" className="text-xs bg-white text-slate-500 border-slate-200 font-normal">
-                             ${hc.items.reduce((s, i) => s + i.price * i.quantity, 0).toFixed(2)}
+                             {currencySymbol}{hc.items.reduce((s, i) => s + i.price * i.quantity, 0).toFixed(2)}
                         </Badge>
                       </div>
                       <p className="text-[10px] text-slate-400 mt-1">

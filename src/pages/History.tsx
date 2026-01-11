@@ -4,6 +4,7 @@ import { Search, Eye, Receipt, User, Clock, X, Calendar } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
+import { useSettings } from '../store/useSettings';
 
 export const History: React.FC = () => {
   const [orders, setOrders] = useState<IOrder[]>([]);
@@ -11,6 +12,7 @@ export const History: React.FC = () => {
   const [users, setUsers] = useState<Record<number, IUser>>({});
   const [search, setSearch] = useState('');
   const [selectedOrder, setSelectedOrder] = useState<IOrder | null>(null);
+  const { currencySymbol } = useSettings();
 
   const fetchOrders = async () => {
     const [allOrders, allCustomers, allUsers] = await Promise.all([
@@ -95,7 +97,7 @@ export const History: React.FC = () => {
                   </div>
                 </td>
                 <td className="px-6 py-4 text-right">
-                  <span className="font-bold text-slate-900">${order.total.toFixed(2)}</span>
+                  <span className="font-bold text-slate-900">{currencySymbol}{order.total.toFixed(2)}</span>
                 </td>
                 <td className="px-6 py-4">
                   <div className="flex justify-center">
@@ -168,7 +170,7 @@ export const History: React.FC = () => {
                             <span className="font-bold text-slate-500">{item.quantity}x</span>
                             <span className="text-slate-700">{item.productName}</span>
                         </div>
-                        <span className="font-bold text-slate-900">${(item.price * item.quantity).toFixed(2)}</span>
+                        <span className="font-bold text-slate-900">{currencySymbol}{(item.price * item.quantity).toFixed(2)}</span>
                       </div>
                     ))}
                   </div>
@@ -177,15 +179,15 @@ export const History: React.FC = () => {
                 <div className="space-y-2 border-t border-slate-200 pt-4">
                   <div className="flex justify-between text-sm text-slate-500">
                     <span>Subtotal</span>
-                    <span className="font-medium text-slate-700">${selectedOrder.subtotal.toFixed(2)}</span>
+                    <span className="font-medium text-slate-700">{currencySymbol}{selectedOrder.subtotal.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-sm text-slate-500">
                     <span>Tax</span>
-                    <span className="font-medium text-slate-700">${selectedOrder.tax.toFixed(2)}</span>
+                    <span className="font-medium text-slate-700">{currencySymbol}{selectedOrder.tax.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-xl font-black text-slate-900 pt-2">
                     <span>Total</span>
-                    <span className="text-blue-600">${selectedOrder.total.toFixed(2)}</span>
+                    <span className="text-blue-600">{currencySymbol}{selectedOrder.total.toFixed(2)}</span>
                   </div>
                 </div>
               </div>
