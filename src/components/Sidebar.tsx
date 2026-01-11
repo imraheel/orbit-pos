@@ -3,6 +3,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, ShoppingCart, Package, Users, Settings, LogOut, History } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useAuth } from '../store/useAuth';
+import { useUI } from '../store/useUI';
 
 const navItems = [
   { icon: LayoutDashboard, label: 'Dashboard', to: '/' },
@@ -15,6 +16,7 @@ const navItems = [
 
 export const Sidebar: React.FC = () => {
   const logout = useAuth((state) => state.logout);
+  const { isSidebarOpen } = useUI();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -23,8 +25,13 @@ export const Sidebar: React.FC = () => {
   };
 
   return (
-    <aside className="flex h-screen w-64 flex-col border-r border-slate-200 bg-white">
-      <div className="flex h-16 items-center px-6 border-b border-slate-200">
+    <aside 
+      className={cn(
+        "flex h-screen flex-col border-r border-slate-200 bg-white transition-all duration-300 ease-in-out overflow-hidden",
+        isSidebarOpen ? "w-64" : "w-0 border-none"
+      )}
+    >
+      <div className="flex h-16 items-center px-6 border-b border-slate-200 min-w-[16rem]">
         <div className="flex items-center gap-2">
           <div className="h-8 w-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-lg">
             O
@@ -33,7 +40,7 @@ export const Sidebar: React.FC = () => {
         </div>
       </div>
       
-      <nav className="flex-1 space-y-1 p-4">
+      <nav className="flex-1 space-y-1 p-4 min-w-[16rem]">
         {navItems.map((item) => (
           <NavLink
             key={item.to}
@@ -57,7 +64,7 @@ export const Sidebar: React.FC = () => {
         ))}
       </nav>
 
-      <div className="border-t border-slate-200 p-4">
+      <div className="border-t border-slate-200 p-4 min-w-[16rem]">
         <button 
           onClick={handleLogout}
           className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-slate-500 hover:bg-red-50 hover:text-red-600 transition-colors"

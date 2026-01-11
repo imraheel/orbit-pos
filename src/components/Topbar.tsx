@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { User, Wifi } from 'lucide-react';
+import { User, Wifi, Menu } from 'lucide-react';
 import { useAuth } from '../store/useAuth';
+import { useUI } from '../store/useUI';
+import { Button } from './ui/Button';
 
 export const Topbar: React.FC = () => {
   const [date, setDate] = useState(new Date());
   const user = useAuth((state) => state.user);
+  const { toggleSidebar } = useUI();
 
   useEffect(() => {
     const timer = setInterval(() => setDate(new Date()), 1000);
@@ -13,13 +16,18 @@ export const Topbar: React.FC = () => {
 
   return (
     <header className="flex h-16 items-center justify-between border-b border-slate-200 bg-white px-6">
-      <div className="flex flex-col">
-        <h2 className="text-sm font-semibold text-slate-900">
-          {date.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-        </h2>
-        <p className="text-xs text-slate-500">
-          {date.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
-        </p>
+      <div className="flex items-center gap-4">
+        <Button variant="ghost" size="icon" onClick={toggleSidebar}>
+          <Menu size={20} />
+        </Button>
+        <div className="flex flex-col">
+          <h2 className="text-sm font-semibold text-slate-900">
+            {date.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+          </h2>
+          <p className="text-xs text-slate-500">
+            {date.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
+          </p>
+        </div>
       </div>
 
       <div className="flex items-center gap-4">
