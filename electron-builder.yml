@@ -11,6 +11,7 @@ mac:
     - dmg
     - zip
   category: public.app-category.business
+  identity: null
 win:
   target:
     - target: nsis
