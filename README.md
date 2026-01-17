@@ -44,7 +44,7 @@ Orbit POS is a modern, cross-platform desktop Point of Sale (POS) application de
 ### Prerequisites
 
 - Node.js (Latest LTS recommended)
-- npm
+- pnpm
 
 ### Installation
 
@@ -56,26 +56,26 @@ Orbit POS is a modern, cross-platform desktop Point of Sale (POS) application de
 
 2. Install dependencies:
    ```bash
-   npm install
+   pnpm install
    ```
 
 ### Development
 
 Start the development environment with hot-reloading for both React and Electron:
 ```bash
-npm run dev
+pnpm run dev
 ```
 
 ### Production Build
 
 To build and package the application for your current platform:
 ```bash
-npm run build
+pnpm run build
 ```
 
 Individual build steps:
-- **Frontend:** `npm run build:react`
-- **Electron:** `npm run build:electron`
+- **Frontend:** `pnpm run build:react`
+- **Electron:** `pnpm run build:electron`
 
 ## 📊 Database Schema
 
@@ -85,3 +85,13 @@ The application uses IndexedDB for local storage with the following primary tabl
 - `categories`: Product groupings.
 - `customers`: Customer profiles and contact info.
 - `orders`: Transaction history and status.
+
+
+### Todo
+- [ ] Add tax field in product, each product can have different tax amount
+- [ ] Add product images
+- [ ] Generate and Print order receipt
+- [ ] Add and remove stock from inventory instead of updating products
+- [ ] App icon
+- [ ] Windows and MacOS production build
+- [ ] Implement auto update using electron-updater

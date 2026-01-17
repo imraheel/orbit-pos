@@ -17,18 +17,18 @@ Orbit POS is a cross-platform desktop Point of Sale (POS) application designed f
 ### Development
 To start the development environment with hot-reloading for both React and Electron:
 ```bash
-npm run dev
+pnpm run dev
 ```
 This command concurrently runs Vite for the frontend and compiles/starts Electron.
 
 ### Production Build
 To build the application for production and package it using electron-builder:
 ```bash
-npm run build
+pnpm run build
 ```
 Individual build steps:
-- Frontend: `npm run build:react`
-- Electron: `npm run build:electron`
+- Frontend: `pnpm run build:react`
+- Electron: `pnpm run build:electron`
 
 ## Project Structure
 - `electron/`: Contains the Electron main process logic and preload scripts.
