@@ -5,7 +5,7 @@ import { useAuth } from '../../store/useAuth';
 import { X, CheckCircle2, Banknote, CreditCard, Loader2, User, UserPlus } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../ui/Button';
-import { cn } from '../../lib/utils';
+import { cn, calculateGrossPrice } from '../../lib/utils';
 import { useSettings } from '../../store/useSettings';
 import { Input } from '../ui/Input';
 
@@ -91,13 +91,24 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
            }
       }
 
-      const orderItems: IOrderItem[] = items.map(item => ({
-        productId: item.id!,
-        productName: item.name,
-        price: item.price,
-        quantity: item.quantity,
-        discount: 0,
-      }));
+      const orderItems: IOrderItem[] = items.map(item => {
+        const itemTax = item.taxType === 'percentage' 
+          ? (item.price * item.quantity) * (item.taxValue / 100)
+          : item.taxType === 'fixed' 
+            ? item.taxValue * item.quantity 
+            : 0;
+        
+        return {
+          productId: item.id!,
+          productName: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          discount: 0,
+          taxType: item.taxType || 'none',
+          taxValue: item.taxValue || 0,
+          taxAmount: Math.round(itemTax * 100) / 100,
+        };
+      });
 
       const order: IOrder = {
         customerId: orderCustomerId,
@@ -246,13 +257,13 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
                     {items.map(item => (
                         <div key={item.id} className="flex justify-between text-sm">
                         <span className="text-slate-600 font-medium">{item.quantity}x <span className="text-slate-800">{item.name}</span></span>
-                        <span className="font-bold text-slate-700">{currencySymbol}{(item.price * item.quantity).toFixed(2)}</span>
+                        <span className="font-bold text-slate-700">{currencySymbol}{(calculateGrossPrice(item) * item.quantity).toFixed(2)}</span>
                         </div>
                     ))}
                     </div>
                     <div className="border-t border-slate-200 pt-4 space-y-2">
                     <div className="flex justify-between text-sm">
-                        <span className="text-slate-500">Subtotal</span>
+                        <span className="text-slate-500">Subtotal (excl. tax)</span>
                         <span className="font-medium text-slate-700">{currencySymbol}{subtotal().toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between text-sm">

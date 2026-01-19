@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { Badge } from '../ui/Badge';
-import { cn } from '../../lib/utils';
+import { cn, calculateGrossPrice } from '../../lib/utils';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
 import { useSettings } from '../../store/useSettings';
 
@@ -25,6 +25,8 @@ export const ProductList: React.FC = () => {
     price: 0,
     stock: 0,
     categoryId: 0,
+    taxType: 'none',
+    taxValue: 0,
   });
 
   // Delete Confirmation State
@@ -63,6 +65,8 @@ export const ProductList: React.FC = () => {
         price: 0,
         stock: 0,
         categoryId: categories[0]?.id || 0,
+        taxType: 'none',
+        taxValue: 0,
       });
     }
     setIsModalOpen(true);
@@ -78,6 +82,7 @@ export const ProductList: React.FC = () => {
       price: Number(formData.price),
       stock: Number(formData.stock),
       categoryId: Number(formData.categoryId),
+      taxValue: Number(formData.taxValue),
     } as IProduct;
 
     if (editingProduct && editingProduct.id) {
@@ -168,7 +173,7 @@ export const ProductList: React.FC = () => {
                       {category?.name || 'Uncategorized'}
                     </Badge>
                   </td>
-                  <td className="px-6 py-4 text-right font-medium text-slate-900">{currencySymbol}{product.price.toFixed(2)}</td>
+                  <td className="px-6 py-4 text-right font-medium text-slate-900">{currencySymbol}{calculateGrossPrice(product).toFixed(2)}</td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end gap-2">
                         {product.stock < 10 && <AlertCircle size={14} className="text-amber-500" />}
@@ -268,6 +273,35 @@ export const ProductList: React.FC = () => {
                             onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
                         />
                     </div>
+
+                    <div className="space-y-1">
+                        <label className="text-sm font-medium text-slate-700">Tax Type</label>
+                        <select
+                            value={formData.taxType || 'none'}
+                            onChange={(e) => setFormData({ ...formData, taxType: e.target.value as any })}
+                            className="w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                        >
+                            <option value="none">None</option>
+                            <option value="percentage">Percentage (%)</option>
+                            <option value="fixed">Fixed Amount ({currencySymbol})</option>
+                        </select>
+                    </div>
+
+                    {formData.taxType && formData.taxType !== 'none' && (
+                        <div className="space-y-1">
+                            <label className="text-sm font-medium text-slate-700">
+                                Tax Value {formData.taxType === 'percentage' ? '(%)' : `(${currencySymbol})`}
+                            </label>
+                            <Input
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                required
+                                value={formData.taxValue}
+                                onChange={(e) => setFormData({ ...formData, taxValue: Number(e.target.value) })}
+                            />
+                        </div>
+                    )}
 
                     <div className="space-y-1">
                         <label className="text-sm font-medium text-slate-700">Stock Level</label>

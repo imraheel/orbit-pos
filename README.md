@@ -88,7 +88,7 @@ The application uses IndexedDB for local storage with the following primary tabl
 
 
 ### Todo
-- [ ] Add tax field in product, each product can have different tax amount
+- [x] Add tax field in product, each product can have different tax amount
 - [ ] Add product images
 - [ ] Generate and Print order receipt
 - [ ] Add and remove stock from inventory instead of updating products

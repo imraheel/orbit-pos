@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../ui/Button';
 import { Badge } from '../ui/Badge';
 import { useSettings } from '../../store/useSettings';
+import { calculateGrossPrice } from '../../lib/utils';
 
 interface CartSidebarProps {
   onCheckout: () => void;
@@ -91,7 +92,7 @@ export const CartSidebar: React.FC<CartSidebarProps> = ({ onCheckout }) => {
             >
               <div className="flex-1 min-w-0">
                 <h3 className="text-sm font-semibold text-slate-800 truncate">{item.name}</h3>
-                <p className="text-sm font-bold text-blue-600">{currencySymbol}{item.price.toFixed(2)}</p>
+                <p className="text-sm font-bold text-blue-600">{currencySymbol}{calculateGrossPrice(item).toFixed(2)}</p>
               </div>
               
               <div className="flex items-center gap-3">
@@ -134,11 +135,11 @@ export const CartSidebar: React.FC<CartSidebarProps> = ({ onCheckout }) => {
       <div className="border-t border-slate-200 bg-white p-6 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-20">
         <div className="space-y-3 pb-6">
           <div className="flex justify-between text-sm text-slate-500">
-            <span>Subtotal</span>
+            <span>Subtotal (excl. tax)</span>
             <span className="font-medium text-slate-900">{currencySymbol}{subtotal().toFixed(2)}</span>
           </div>
           <div className="flex justify-between text-sm text-slate-500">
-            <span>Tax (10%)</span>
+            <span>Tax</span>
             <span className="font-medium text-slate-900">{currencySymbol}{tax().toFixed(2)}</span>
           </div>
           <div className="flex justify-between border-t border-dashed border-slate-200 pt-3">

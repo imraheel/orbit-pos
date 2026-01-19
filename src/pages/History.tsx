@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { useSettings } from '../store/useSettings';
+import { calculateGrossPrice } from '../lib/utils';
 
 export const History: React.FC = () => {
   const [orders, setOrders] = useState<IOrder[]>([]);
@@ -170,7 +171,7 @@ export const History: React.FC = () => {
                             <span className="font-bold text-slate-500">{item.quantity}x</span>
                             <span className="text-slate-700">{item.productName}</span>
                         </div>
-                        <span className="font-bold text-slate-900">{currencySymbol}{(item.price * item.quantity).toFixed(2)}</span>
+                        <span className="font-bold text-slate-900">{currencySymbol}{(calculateGrossPrice(item as any) * item.quantity).toFixed(2)}</span>
                       </div>
                     ))}
                   </div>
@@ -178,7 +179,7 @@ export const History: React.FC = () => {
 
                 <div className="space-y-2 border-t border-slate-200 pt-4">
                   <div className="flex justify-between text-sm text-slate-500">
-                    <span>Subtotal</span>
+                    <span>Subtotal (excl. tax)</span>
                     <span className="font-medium text-slate-700">{currencySymbol}{selectedOrder.subtotal.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-sm text-slate-500">

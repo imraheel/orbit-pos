@@ -48,6 +48,8 @@ export const seedDatabase = async () => {
             price: 1.50,
             stock: 100,
             categoryId: bevCat.id!,
+            taxType: 'none',
+            taxValue: 0,
         },
         {
             name: 'Chips BBQ',
@@ -55,6 +57,8 @@ export const seedDatabase = async () => {
             price: 2.00,
             stock: 50,
             categoryId: snackCat.id!,
+            taxType: 'none',
+            taxValue: 0,
         }
         ]);
         console.log('Seeded products');

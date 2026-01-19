@@ -17,6 +17,8 @@ export interface ICategory {
   color?: string; // For UI tiles
 }
 
+export type TaxType = 'percentage' | 'fixed' | 'none';
+
 export interface IProduct {
   id?: number;
   name: string;
@@ -26,7 +28,8 @@ export interface IProduct {
   stock: number;
   categoryId: number;
   imageUrl?: string;
-  taxRate?: number; // Override default if needed
+  taxType: TaxType;
+  taxValue: number;
 }
 
 export interface ICustomer {
@@ -43,6 +46,9 @@ export interface IOrderItem {
   price: number; // Snapshot of price at sale
   quantity: number;
   discount: number;
+  taxType: TaxType;
+  taxValue: number;
+  taxAmount: number; // Calculated tax for this line item
 }
 
 export interface IOrder {
@@ -77,6 +83,15 @@ export class OrbitPOSDatabase extends Dexie {
   constructor() {
     super('OrbitPOSDB');
     
+    this.version(5).stores({
+      users: '++id, username, pinCode',
+      categories: '++id, name',
+      products: '++id, name, categoryId, barcode',
+      customers: '++id, name, &phone', // Unique phone
+      orders: '++id, customerId, status, createdAt, userId',
+      settings: '++id, &key'
+    });
+
     this.version(4).stores({
       users: '++id, username, pinCode',
       categories: '++id, name',

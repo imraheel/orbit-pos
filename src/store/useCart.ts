@@ -79,7 +79,21 @@ export const useCart = create<CartState>((set, get) => ({
   },
 
   tax: () => {
-    return get().subtotal() * 0.10; 
+    const { items } = get();
+    return items.reduce((totalTax, item) => {
+      let itemTax = 0;
+      const taxType = item.taxType || 'none';
+      const taxValue = item.taxValue || 0;
+
+      if (taxType === 'percentage') {
+        itemTax = (item.price * item.quantity) * (taxValue / 100);
+      } else if (taxType === 'fixed') {
+        itemTax = taxValue * item.quantity;
+      }
+      
+      // Round to 2 decimal places per item line
+      return totalTax + Math.round(itemTax * 100) / 100;
+    }, 0);
   },
 
   total: () => {
