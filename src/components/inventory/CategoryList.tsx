@@ -78,7 +78,7 @@ export const CategoryList: React.FC = () => {
         {categories.map((category) => (
           <div
             key={category.id}
-            className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition-all hover:border-blue-300 hover:shadow-md"
+            className="group flex items-center justify-between rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm transition-all hover:border-blue-300 hover:shadow-md"
           >
             <div className="flex items-center gap-4">
               <div
@@ -87,13 +87,13 @@ export const CategoryList: React.FC = () => {
               >
                 {category.name.charAt(0).toUpperCase()}
               </div>
-              <span className="font-semibold text-slate-800">{category.name}</span>
+              <span className="font-semibold text-slate-800 dark:text-slate-100">{category.name}</span>
             </div>
             <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-              <Button variant="ghost" size="icon" onClick={() => handleOpenModal(category)} className="text-slate-400 hover:text-blue-600">
+              <Button variant="ghost" size="icon" onClick={() => handleOpenModal(category)} className="text-slate-400 dark:text-slate-500 hover:text-blue-600">
                 <Edit2 size={16} />
               </Button>
-              <Button variant="ghost" size="icon" onClick={() => handleDelete(category)} className="text-slate-400 hover:text-red-600">
+              <Button variant="ghost" size="icon" onClick={() => handleDelete(category)} className="text-slate-400 dark:text-slate-500 hover:text-red-600">
                 <Trash2 size={16} />
               </Button>
             </div>
@@ -103,7 +103,7 @@ export const CategoryList: React.FC = () => {
         {/* Add New Card Placeholder */}
         <button
             onClick={() => handleOpenModal()}
-            className="flex h-[82px] items-center justify-center rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 text-slate-400 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-600 transition-all"
+            className="flex h-[82px] items-center justify-center rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-400 dark:text-slate-500 hover:border-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/50 hover:text-blue-600 transition-all"
         >
             <div className="flex items-center gap-2 font-medium">
                 <Plus size={20} />
@@ -115,15 +115,15 @@ export const CategoryList: React.FC = () => {
       {/* Modal */}
       <AnimatePresence>
         {isModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 dark:bg-slate-800/60 backdrop-blur-sm p-4">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl"
+              className="w-full max-w-sm rounded-2xl bg-white dark:bg-slate-900 p-6 shadow-2xl"
             >
               <div className="mb-6 flex items-center justify-between">
-                <h2 className="text-xl font-bold text-slate-900">
+                <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">
                   {editingCategory ? 'Edit Category' : 'New Category'}
                 </h2>
                 <Button variant="ghost" size="icon" onClick={() => setIsModalOpen(false)}>
@@ -133,7 +133,7 @@ export const CategoryList: React.FC = () => {
 
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-slate-700">
+                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
                     Category Name
                   </label>
                   <Input
@@ -148,7 +148,7 @@ export const CategoryList: React.FC = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-slate-700">
+                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
                     Color Tag
                   </label>
                   <div className="flex flex-wrap gap-3">

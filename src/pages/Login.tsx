@@ -100,24 +100,24 @@ export const Login: React.FC = () => {
       </div>
 
       <div className="w-full max-w-4xl z-10 p-4">
-        <motion.div 
+        <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="rounded-3xl bg-white/95 backdrop-blur-xl shadow-2xl overflow-hidden border border-white/20 grid md:grid-cols-2"
+            className="rounded-3xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl shadow-2xl overflow-hidden border border-white/20 dark:border-slate-700/20 grid md:grid-cols-2"
         >
             {/* Left Panel: Logo & User Selection */}
-            <div className="p-8 md:p-12 flex flex-col justify-center items-center bg-slate-50/50 border-r border-slate-100">
-                <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-3xl bg-blue-600 text-white shadow-xl shadow-blue-200">
+            <div className="p-8 md:p-12 flex flex-col justify-center items-center bg-slate-50/50 dark:bg-slate-800/50 border-r border-slate-100 dark:border-slate-700">
+                <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-3xl bg-blue-600 text-white shadow-xl shadow-blue-200 dark:shadow-blue-900">
                     <Lock size={40} strokeWidth={2.5} />
                 </div>
-                <h1 className="text-3xl font-black text-slate-900 tracking-tight text-center">Orbit POS</h1>
-                <p className="text-slate-500 font-medium mt-2 text-center mb-8">Secure Access Portal</p>
+                <h1 className="text-3xl font-black text-slate-900 dark:text-slate-100 tracking-tight text-center">Orbit POS</h1>
+                <p className="text-slate-500 dark:text-slate-400 font-medium mt-2 text-center mb-8">Secure Access Portal</p>
                 
                 {/* User Selection */}
                 <div className="w-full max-w-xs mb-8">
-                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Select User</label>
+                  <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2">Select User</label>
                   <div className="relative">
-                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500">
                       <User size={18} />
                     </div>
                     <select
@@ -127,7 +127,7 @@ export const Login: React.FC = () => {
                         setPin('');
                         setError('');
                       }}
-                      className="w-full appearance-none rounded-xl border border-slate-200 bg-white py-3.5 pl-11 pr-10 text-sm font-bold text-slate-700 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all cursor-pointer hover:border-blue-300"
+                      className="w-full appearance-none rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 py-3.5 pl-11 pr-10 text-sm font-bold text-slate-700 dark:text-slate-300 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all cursor-pointer hover:border-blue-300"
                     >
                       {users.map((user) => (
                         <option key={user.id} value={user.id}>
@@ -136,23 +136,23 @@ export const Login: React.FC = () => {
                       ))}
                       {users.length === 0 && <option disabled>No users found</option>}
                     </select>
-                    <div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-slate-500">
+                    <div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-400">
                       <ChevronDown size={16} />
                     </div>
                   </div>
                 </div>
 
                 <div className="mt-auto text-center">
-                    <p className="text-xs font-medium text-slate-400">System Ready • v1.0.0</p>
-                    <p className="text-[10px] text-slate-300 mt-1">Default PIN: 1234</p>
+                    <p className="text-xs font-medium text-slate-400 dark:text-slate-500">System Ready • v1.0.0</p>
+                    <p className="text-[10px] text-slate-300 dark:text-slate-600 mt-1">Default PIN: 1234</p>
                 </div>
             </div>
 
             {/* Right Panel: PIN Entry */}
-            <div className="p-8 md:p-12 flex flex-col justify-center bg-white">
+            <div className="p-8 md:p-12 flex flex-col justify-center bg-white dark:bg-slate-900">
                 <div className="text-center mb-8">
-                    <h2 className="text-xl font-bold text-slate-800">Enter PIN</h2>
-                    <p className="text-sm text-slate-400 mt-1">Please enter your 4-digit security PIN</p>
+                    <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100">Enter PIN</h2>
+                    <p className="text-sm text-slate-400 dark:text-slate-500 mt-1">Please enter your 4-digit security PIN</p>
                 </div>
 
                 {/* PIN Dots */}
@@ -180,7 +180,7 @@ export const Login: React.FC = () => {
                             exit={{ opacity: 0, height: 0 }}
                             className="mb-6 overflow-hidden"
                         >
-                            <div className="rounded-xl bg-red-50 p-3 text-center text-sm font-bold text-red-600 border border-red-100">
+                            <div className="rounded-xl bg-red-50 dark:bg-red-900/50 p-3 text-center text-sm font-bold text-red-600 dark:text-red-400 border border-red-100 dark:border-red-700">
                                 {error}
                             </div>
                         </motion.div>
@@ -194,7 +194,7 @@ export const Login: React.FC = () => {
                     key={num}
                     onClick={() => handleNumClick(num.toString())}
                     disabled={loading}
-                    className="flex h-16 sm:h-20 items-center justify-center rounded-2xl bg-slate-50 text-2xl sm:text-3xl font-bold text-slate-700 shadow-sm border border-slate-100 hover:bg-white hover:border-blue-200 hover:text-blue-600 hover:shadow-md active:scale-95 transition-all disabled:opacity-50"
+                    className="flex h-16 sm:h-20 items-center justify-center rounded-2xl bg-slate-50 dark:bg-slate-800 text-2xl sm:text-3xl font-bold text-slate-700 dark:text-slate-300 shadow-sm border border-slate-100 dark:border-slate-700 hover:bg-white dark:hover:bg-slate-900 hover:border-blue-200 hover:text-blue-600 hover:shadow-md active:scale-95 transition-all disabled:opacity-50"
                     >
                     {num}
                     </button>
@@ -205,14 +205,14 @@ export const Login: React.FC = () => {
                 <button
                     onClick={() => handleNumClick('0')}
                     disabled={loading}
-                    className="flex h-16 sm:h-20 items-center justify-center rounded-2xl bg-slate-50 text-2xl sm:text-3xl font-bold text-slate-700 shadow-sm border border-slate-100 hover:bg-white hover:border-blue-200 hover:text-blue-600 hover:shadow-md active:scale-95 transition-all disabled:opacity-50"
+                    className="flex h-16 sm:h-20 items-center justify-center rounded-2xl bg-slate-50 dark:bg-slate-800 text-2xl sm:text-3xl font-bold text-slate-700 dark:text-slate-300 shadow-sm border border-slate-100 dark:border-slate-700 hover:bg-white dark:hover:bg-slate-900 hover:border-blue-200 hover:text-blue-600 hover:shadow-md active:scale-95 transition-all disabled:opacity-50"
                 >
                     0
                 </button>
                 <button
                     onClick={handleBackspace}
                     disabled={loading}
-                    className="flex h-16 sm:h-20 items-center justify-center rounded-2xl bg-slate-50 text-slate-400 shadow-sm border border-slate-100 hover:bg-red-50 hover:border-red-200 hover:text-red-600 hover:shadow-md active:scale-95 transition-all disabled:opacity-50"
+                    className="flex h-16 sm:h-20 items-center justify-center rounded-2xl bg-slate-50 dark:bg-slate-800 text-slate-400 dark:text-slate-500 shadow-sm border border-slate-100 dark:border-slate-700 hover:bg-red-50 dark:hover:bg-red-900/50 hover:border-red-200 hover:text-red-600 hover:shadow-md active:scale-95 transition-all disabled:opacity-50"
                 >
                     <Delete size={28} />
                 </button>

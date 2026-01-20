@@ -4,6 +4,7 @@ import { db } from '../db';
 interface SettingsState {
   currency: string;
   currencySymbol: string;
+  theme: 'light' | 'dark';
   isLoading: boolean;
   fetchSettings: () => Promise<void>;
   updateSetting: (key: string, value: any) => Promise<void>;
@@ -12,6 +13,7 @@ interface SettingsState {
 export const useSettings = create<SettingsState>((set) => ({
   currency: 'USD',
   currencySymbol: '$',
+  theme: 'light',
   isLoading: true,
 
   fetchSettings: async () => {
@@ -19,10 +21,12 @@ export const useSettings = create<SettingsState>((set) => ({
       set({ isLoading: true });
       const currencySetting = await db.settings.where('key').equals('currency').first();
       const symbolSetting = await db.settings.where('key').equals('currencySymbol').first();
+      const themeSetting = await db.settings.where('key').equals('theme').first();
 
       set({
         currency: currencySetting?.value || 'USD',
         currencySymbol: symbolSetting?.value || '$',
+        theme: themeSetting?.value || 'light',
         isLoading: false,
       });
     } catch (error) {
@@ -43,6 +47,7 @@ export const useSettings = create<SettingsState>((set) => ({
       // Update local state
       if (key === 'currency') set({ currency: value });
       if (key === 'currencySymbol') set({ currencySymbol: value });
+      if (key === 'theme') set({ theme: value });
     } catch (error) {
       console.error(`Failed to update setting ${key}:`, error);
     }

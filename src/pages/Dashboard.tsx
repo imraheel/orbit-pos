@@ -107,24 +107,24 @@ export const Dashboard: React.FC = () => {
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         {/* Recent Orders */}
-        <Card className="lg:col-span-2 border-slate-200">
+        <Card className="lg:col-span-2 border-slate-200 dark:border-slate-700">
             <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle className="text-xl">Recent Orders</CardTitle>
-                <Button variant="ghost" size="sm" onClick={() => navigate('/history')} className="text-blue-600 hover:bg-blue-50">
+                <Button variant="ghost" size="sm" onClick={() => navigate('/history')} className="text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/50">
                     View All <ArrowRight size={16} className="ml-2" />
                 </Button>
             </CardHeader>
             <CardContent>
                 <div className="space-y-4">
                     {recentOrders.map((order) => (
-                    <div key={order.id} className="flex items-center justify-between rounded-xl border border-slate-100 p-4 hover:bg-slate-50 hover:border-slate-200 transition-all">
+                    <div key={order.id} className="flex items-center justify-between rounded-xl border border-slate-100 dark:border-slate-700 p-4 hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-slate-200 dark:hover:border-slate-600 transition-all">
                         <div className="flex items-center gap-4">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-500">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
                             <Package size={20} />
                         </div>
                         <div>
-                            <p className="font-bold text-slate-800">Order #{order.id}</p>
-                            <div className="flex items-center gap-2 text-xs text-slate-500">
+                            <p className="font-bold text-slate-800 dark:text-slate-100">Order #{order.id}</p>
+                            <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
                                 <span>{new Date(order.createdAt).toLocaleTimeString()}</span>
                                 <span>•</span>
                                 <span>{order.items.length} items</span>
@@ -132,15 +132,15 @@ export const Dashboard: React.FC = () => {
                         </div>
                         </div>
                         <div className="text-right">
-                        <p className="font-bold text-slate-900">{currencySymbol}{order.total.toFixed(2)}</p>
-                        <span className="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/20">
+                        <p className="font-bold text-slate-900 dark:text-slate-100">{currencySymbol}{order.total.toFixed(2)}</p>
+                        <span className="inline-flex items-center rounded-full bg-emerald-50 dark:bg-emerald-900 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:text-emerald-100 ring-1 ring-inset ring-emerald-600/20 dark:ring-emerald-400/20">
                             Completed
                         </span>
                         </div>
                     </div>
                     ))}
                     {recentOrders.length === 0 && (
-                    <div className="py-12 text-center text-slate-400">
+                    <div className="py-12 text-center text-slate-400 dark:text-slate-500">
                         <Package size={48} className="mx-auto mb-3 opacity-20" />
                         <p>No orders yet today.</p>
                     </div>
@@ -151,7 +151,7 @@ export const Dashboard: React.FC = () => {
 
         {/* Quick Actions or Tips */}
         <div className="space-y-6">
-           <Card className="bg-blue-600 text-white border-blue-500 shadow-lg shadow-blue-200">
+           <Card className="bg-blue-600 text-white border-blue-500 shadow-lg shadow-blue-200 dark:shadow-blue-900">
               <CardContent className="p-8">
                 <h3 className="text-xl font-bold mb-2">Daily Goal</h3>
                 <p className="text-blue-100 mb-6">You've reached 85% of your daily sales goal. Keep pushing!</p>
@@ -175,13 +175,13 @@ export const Dashboard: React.FC = () => {
                   <CardTitle className="text-lg">Quick Actions</CardTitle>
               </CardHeader>
               <CardContent className="grid gap-3">
-                <button onClick={() => navigate('/inventory')} className="flex items-center gap-3 rounded-xl border border-slate-100 p-4 font-medium text-slate-700 hover:bg-slate-50 hover:border-slate-200 transition-all text-left">
+                <button onClick={() => navigate('/inventory')} className="flex items-center gap-3 rounded-xl border border-slate-100 dark:border-slate-700 p-4 font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-slate-200 dark:hover:border-slate-600 transition-all text-left">
                   <div className="h-8 w-8 rounded-lg bg-violet-100 text-violet-600 flex items-center justify-center">
                     <TrendingUp size={18} />
                   </div>
                   <span>Inventory Report</span>
                 </button>
-                <button className="flex items-center gap-3 rounded-xl border border-slate-100 p-4 font-medium text-slate-700 hover:bg-slate-50 hover:border-slate-200 transition-all text-left">
+                <button className="flex items-center gap-3 rounded-xl border border-slate-100 dark:border-slate-700 p-4 font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-slate-200 dark:hover:border-slate-600 transition-all text-left">
                   <div className="h-8 w-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center">
                     <DollarSign size={18} />
                   </div>

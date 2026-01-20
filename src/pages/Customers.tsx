@@ -90,8 +90,8 @@ export const Customers: React.FC = () => {
     <div className="flex h-full flex-col space-y-6">
       <div className="flex items-center justify-between">
         <div>
-            <h1 className="text-2xl font-bold text-slate-900">Customers</h1>
-            <p className="text-sm text-slate-500">Manage customer profiles and view purchase history.</p>
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Customers</h1>
+            <p className="text-sm text-slate-500 dark:text-slate-400">Manage customer profiles and view purchase history.</p>
         </div>
         <Button onClick={() => handleOpenModal()}>
           <Plus size={18} className="mr-2" />
@@ -108,9 +108,9 @@ export const Customers: React.FC = () => {
         />
       </div>
 
-      <div className="flex-1 overflow-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+      <div className="flex-1 overflow-auto rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm">
         <table className="w-full text-left text-sm">
-          <thead className="sticky top-0 bg-slate-50 text-xs uppercase text-slate-500 font-semibold border-b border-slate-200">
+          <thead className="sticky top-0 bg-slate-50 dark:bg-slate-800 text-xs uppercase text-slate-500 dark:text-slate-400 font-semibold border-b border-slate-200 dark:border-slate-700">
             <tr>
               <th className="px-6 py-4">Name</th>
               <th className="px-6 py-4">Phone</th>
@@ -119,21 +119,21 @@ export const Customers: React.FC = () => {
               <th className="px-6 py-4 text-center">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
             {filteredCustomers.map((customer) => {
               const isDefaultCustomer = customer.name === 'Walk-in Customer';
               return (
-              <tr key={customer.id} className="hover:bg-slate-50/50 transition-colors">
-                <td className="px-6 py-4 font-medium text-slate-900">
+              <tr key={customer.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
+                <td className="px-6 py-4 font-medium text-slate-900 dark:text-slate-100">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 dark:bg-blue-900/50 text-blue-600">
                       <User size={16} />
                     </div>
                     {customer.name}
                   </div>
                 </td>
-                <td className="px-6 py-4 text-slate-600">{customer.phone || '-'}</td>
-                <td className="px-6 py-4 text-slate-600">{customer.email || '-'}</td>
+                <td className="px-6 py-4 text-slate-600 dark:text-slate-400">{customer.phone || '-'}</td>
+                <td className="px-6 py-4 text-slate-600 dark:text-slate-400">{customer.email || '-'}</td>
                 <td className="px-6 py-4 text-right font-medium text-emerald-600">
                   {currencySymbol}{customer.totalSpent.toFixed(2)}
                 </td>
@@ -143,7 +143,7 @@ export const Customers: React.FC = () => {
                       variant="ghost" 
                       size="icon" 
                       onClick={() => handleOpenModal(customer)} 
-                      className="text-blue-600 hover:bg-blue-50"
+                      className="text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/50"
                       disabled={isDefaultCustomer}
                       title={isDefaultCustomer ? "Cannot edit default customer" : "Edit"}
                     >
@@ -153,7 +153,7 @@ export const Customers: React.FC = () => {
                       variant="ghost" 
                       size="icon" 
                       onClick={() => handleDelete(customer)} 
-                      className="text-slate-400 hover:text-red-600 hover:bg-red-50"
+                      className="text-slate-400 dark:text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/50"
                       disabled={isDefaultCustomer}
                       title={isDefaultCustomer ? "Cannot delete default customer" : "Delete"}
                     >
@@ -165,7 +165,7 @@ export const Customers: React.FC = () => {
             )})}
             {filteredCustomers.length === 0 && (
                 <tr>
-                    <td colSpan={5} className="px-6 py-12 text-center text-slate-400">
+                    <td colSpan={5} className="px-6 py-12 text-center text-slate-400 dark:text-slate-500">
                         No customers found.
                     </td>
                 </tr>
@@ -177,15 +177,15 @@ export const Customers: React.FC = () => {
       {/* Modal */}
       <AnimatePresence>
         {isModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 dark:bg-slate-800/60 backdrop-blur-sm p-4">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl"
+              className="w-full max-w-md rounded-2xl bg-white dark:bg-slate-900 p-6 shadow-2xl"
             >
               <div className="mb-6 flex items-center justify-between">
-                <h2 className="text-xl font-bold text-slate-900">
+                <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">
                   {editingCustomer ? 'Edit Customer' : 'New Customer'}
                 </h2>
                 <Button variant="ghost" size="icon" onClick={() => setIsModalOpen(false)}>
@@ -195,7 +195,7 @@ export const Customers: React.FC = () => {
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-1">
-                  <label className="text-sm font-medium text-slate-700">Full Name</label>
+                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Full Name</label>
                   <Input
                     type="text"
                     required
@@ -206,7 +206,7 @@ export const Customers: React.FC = () => {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-sm font-medium text-slate-700">Phone Number</label>
+                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Phone Number</label>
                   <Input
                     type="tel"
                     value={formData.phone}
@@ -216,7 +216,7 @@ export const Customers: React.FC = () => {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-sm font-medium text-slate-700">Email Address</label>
+                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Email Address</label>
                   <Input
                     type="email"
                     value={formData.email}

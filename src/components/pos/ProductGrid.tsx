@@ -47,9 +47,9 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ onProductSelect }) => 
   };
 
   return (
-    <div className="flex flex-1 flex-col overflow-hidden bg-slate-50">
+    <div className="flex flex-1 flex-col overflow-hidden bg-gray-50 dark:bg-slate-900">
       {/* Search and Categories */}
-      <div className="space-y-4 p-4 border-b border-slate-200 bg-white">
+      <div className="space-y-4 p-4 border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
         <Input
           icon={<Search size={18} />}
           placeholder="Search products by name or barcode..."
@@ -66,7 +66,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ onProductSelect }) => 
               'whitespace-nowrap rounded-lg px-4 py-2 text-sm font-medium transition-all border',
               selectedCategory === 'all'
                 ? 'bg-blue-600 border-blue-600 text-white shadow-sm'
-                : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300'
+                : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-600'
             )}
           >
             All Items
@@ -79,7 +79,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ onProductSelect }) => 
                 'whitespace-nowrap rounded-lg px-4 py-2 text-sm font-medium transition-all border',
                 selectedCategory === cat.id
                   ? 'bg-blue-600 border-blue-600 text-white shadow-sm'
-                  : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300'
+                  : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-600'
               )}
             >
               {cat.name}
@@ -95,13 +95,13 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ onProductSelect }) => 
             <button
               key={product.id}
               onClick={() => onProductSelect(product)}
-              className="group flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-white text-left transition-all hover:border-blue-500 hover:shadow-md active:scale-95 active:ring-2 active:ring-blue-500/20"
+              className="group flex flex-col overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-left dark:text-slate-100 transition-all hover:border-blue-500 hover:shadow-md active:scale-95 active:ring-2 active:ring-blue-500/20"
             >
-              <div className="aspect-square w-full bg-slate-100 flex items-center justify-center relative">
+               <div className="aspect-square w-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center relative">
                 {product.imageUrl ? (
                   <img src={product.imageUrl} alt={product.name} className="h-full w-full object-cover" />
                 ) : (
-                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-slate-200 text-slate-400 group-hover:bg-blue-100 group-hover:text-blue-500 transition-colors">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-slate-200 dark:bg-slate-700 text-slate-400 dark:text-slate-500 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/50 group-hover:text-blue-500 transition-colors">
                     <Tag size={32} />
                   </div>
                 )}
@@ -112,20 +112,20 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ onProductSelect }) => 
                 </div>
               </div>
               <div className="p-3">
-                <h3 className="line-clamp-2 text-sm font-medium text-slate-700 group-hover:text-blue-700 transition-colors">
-                  {product.name}
-                </h3>
-                <p className="mt-1 text-base font-bold text-slate-900">{currencySymbol}{calculateGrossPrice(product).toFixed(2)}</p>
+                 <h3 className="line-clamp-2 text-sm font-medium text-slate-700 dark:text-slate-300 group-hover:text-blue-700 dark:group-hover:text-blue-400 transition-colors">
+                   {product.name}
+                 </h3>
+                 <p className="mt-1 text-base font-bold text-slate-900 dark:text-slate-100">{currencySymbol}{calculateGrossPrice(product).toFixed(2)}</p>
               </div>
             </button>
           ))}
         </div>
         
         {filteredProducts.length === 0 && (
-          <div className="flex h-full flex-col items-center justify-center text-slate-400">
-            <Package size={64} strokeWidth={1} className="text-slate-300" />
-            <p className="mt-4 font-medium text-slate-500">No products found</p>
-            <p className="text-sm">Try adjusting your search or category.</p>
+          <div className="flex h-full flex-col items-center justify-center text-slate-400 dark:text-slate-500">
+            <Package size={64} strokeWidth={1} className="text-slate-300 dark:text-slate-600" />
+            <p className="mt-4 font-medium text-slate-500 dark:text-slate-400">No products found</p>
+            <p className="text-sm text-slate-400 dark:text-slate-500">Try adjusting your search or category.</p>
           </div>
         )}
       </div>

@@ -15,16 +15,16 @@ export const Topbar: React.FC = () => {
   }, []);
 
   return (
-    <header className="flex h-16 items-center justify-between border-b border-slate-200 bg-white px-6">
+    <header className="flex h-16 items-center justify-between border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-6">
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" onClick={toggleSidebar}>
           <Menu size={20} />
         </Button>
         <div className="flex flex-col">
-          <h2 className="text-sm font-semibold text-slate-900">
+          <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
             {date.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
           </h2>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-slate-500 dark:text-slate-400">
             {date.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
           </p>
         </div>
@@ -36,15 +36,15 @@ export const Topbar: React.FC = () => {
             <span>Online</span>
         </div>
 
-        <div className="h-8 w-px bg-slate-200" />
+        <div className="h-8 w-px bg-slate-200 dark:bg-slate-700" />
 
         <div className="flex items-center gap-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-100 text-blue-600">
             <User size={18} />
           </div>
           <div className="hidden md:block">
-            <p className="text-sm font-medium text-slate-700">{user?.username || 'Staff'}</p>
-            <p className="text-xs text-slate-500">Active Session</p>
+            <p className="text-sm font-medium text-slate-700 dark:text-slate-300">{user?.username || 'Staff'}</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Active Session</p>
           </div>
         </div>
       </div>
