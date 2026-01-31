@@ -111,9 +111,9 @@ const UserManagement: React.FC = () => {
         />
       </div>
 
-      <div className="flex-1 overflow-auto rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm">
+      <div className="flex-1 overflow-auto rounded-xl border border-slate-200 dark:border-slate-700/50 bg-white dark:bg-slate-900/80 dark:backdrop-blur-sm shadow-sm">
         <table className="w-full text-left text-sm">
-          <thead className="sticky top-0 bg-slate-50 dark:bg-slate-800 text-xs uppercase text-slate-500 dark:text-slate-400 font-semibold border-b border-slate-200 dark:border-slate-700">
+          <thead className="sticky top-0 bg-slate-50 dark:bg-slate-800/80 text-xs uppercase text-slate-500 dark:text-slate-400 font-semibold border-b border-slate-200 dark:border-slate-700/50">
             <tr>
               <th className="px-6 py-4">Username</th>
               <th className="px-6 py-4">PIN Code</th>
@@ -121,7 +121,7 @@ const UserManagement: React.FC = () => {
               <th className="px-6 py-4 text-center">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+          <tbody className="divide-y divide-slate-100 dark:divide-slate-700/50">
             {filteredUsers.map((user) => {
               const isDefaultAdmin = user.username === 'admin';
               return (
@@ -147,7 +147,7 @@ const UserManagement: React.FC = () => {
                       variant="ghost" 
                       size="icon" 
                       onClick={() => handleOpenModal(user)} 
-                      className="text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/50"
+                      className="text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-500/20"
                       disabled={isDefaultAdmin}
                       title={isDefaultAdmin ? "Cannot edit default admin" : "Edit"}
                     >
@@ -157,7 +157,7 @@ const UserManagement: React.FC = () => {
                       variant="ghost" 
                       size="icon" 
                       onClick={() => handleDelete(user)} 
-                      className="text-slate-400 dark:text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/50"
+                      className="text-slate-400 hover:text-red-600 hover:bg-red-50 dark:text-slate-500 dark:hover:text-red-400 dark:hover:bg-red-500/20"
                       disabled={isDefaultAdmin}
                       title={isDefaultAdmin ? "Cannot delete default admin" : "Delete"}
                     >
@@ -181,12 +181,12 @@ const UserManagement: React.FC = () => {
       {/* Modal */}
       <AnimatePresence>
         {isModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 dark:bg-slate-800/60 backdrop-blur-sm p-4">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-xl p-4">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-               className="w-full max-w-md rounded-2xl bg-white dark:bg-slate-900 p-6 shadow-2xl"
+               className="w-full max-w-md rounded-2xl bg-white dark:bg-slate-900/95 dark:backdrop-blur-xl p-6 shadow-2xl dark:border dark:border-slate-700/50"
             >
               <div className="mb-6 flex items-center justify-between">
                 <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">
@@ -221,14 +221,14 @@ const UserManagement: React.FC = () => {
                   />
                 </div>
 
-                <div className="flex items-center gap-3 rounded-lg border border-slate-200 dark:border-slate-700 p-4">
+                <div className="flex items-center gap-3 rounded-lg border border-slate-200 dark:border-slate-700/50 p-4 bg-white dark:bg-slate-800/30">
                   <div className="relative flex h-5 w-5 items-center justify-center">
                     <input
                       type="checkbox"
                       id="isActive"
                       checked={formData.isActive}
                       onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                      className="peer h-4 w-4 rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500"
+                      className="peer h-4 w-4 rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-400"
                     />
                   </div>
                   <label htmlFor="isActive" className="text-sm font-medium text-slate-700 dark:text-slate-300 select-none cursor-pointer">
@@ -295,9 +295,9 @@ const SystemSettings: React.FC = () => {
             </div>
 
             <div className="max-w-2xl space-y-8">
-                <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-sm">
+                <div className="rounded-xl border border-slate-200 dark:border-slate-700/50 bg-white dark:bg-slate-900/80 dark:backdrop-blur-sm p-6 shadow-sm">
                     <h3 className="mb-4 text-base font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-                        <DollarSign size={18} className="text-blue-600" />
+                        <DollarSign size={18} className="text-blue-600 dark:text-blue-400" />
                         Currency Settings
                     </h3>
 
@@ -315,9 +315,9 @@ const SystemSettings: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-sm">
+                <div className="rounded-xl border border-slate-200 dark:border-slate-700/50 bg-white dark:bg-slate-900/80 dark:backdrop-blur-sm p-6 shadow-sm">
                     <h3 className="mb-4 text-base font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-                        <SettingsIcon size={18} className="text-blue-600" />
+                        <SettingsIcon size={18} className="text-blue-600 dark:text-blue-400" />
                         Appearance
                     </h3>
 
@@ -336,7 +336,7 @@ const SystemSettings: React.FC = () => {
                                         checked={theme === 'dark'}
                                         onChange={(e) => handleThemeToggle(e.target.checked ? 'dark' : 'light')}
                                     />
-                                    <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-slate-600 peer-checked:bg-blue-600"></div>
+                                    <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-500/30 rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-slate-600 peer-checked:bg-blue-600 dark:peer-checked:bg-blue-500"></div>
                                     <span className="ml-3 text-sm font-medium text-slate-700 dark:text-slate-300">Dark Mode</span>
                                 </label>
                             </div>
@@ -365,12 +365,12 @@ export const Settings: React.FC = () => {
 
   return (
         <div className="flex h-full flex-col">
-           <div className="flex items-center gap-6 border-b border-slate-200 dark:border-slate-700 px-6 bg-white dark:bg-slate-900 pt-2">
+           <div className="flex items-center gap-6 border-b border-slate-200 dark:border-slate-800 px-6 bg-white dark:bg-slate-900/80 dark:backdrop-blur pt-2">
           <button
              onClick={() => setActiveTab('users')}
              className={cn(
                "flex items-center gap-2 border-b-2 py-4 text-sm font-medium transition-colors",
-               activeTab === 'users' ? "border-blue-600 text-blue-600" : "border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
+               activeTab === 'users' ? "border-blue-600 text-blue-600 dark:border-blue-500 dark:text-blue-400" : "border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
              )}
           >
              <Users size={18} />
@@ -380,7 +380,7 @@ export const Settings: React.FC = () => {
              onClick={() => setActiveTab('system')}
              className={cn(
                "flex items-center gap-2 border-b-2 py-4 text-sm font-medium transition-colors",
-               activeTab === 'system' ? "border-blue-600 text-blue-600" : "border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
+               activeTab === 'system' ? "border-blue-600 text-blue-600 dark:border-blue-500 dark:text-blue-400" : "border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
              )}
           >
              <SettingsIcon size={18} />
@@ -388,7 +388,7 @@ export const Settings: React.FC = () => {
           </button>
        </div>
 
-        <div className="flex-1 overflow-hidden bg-slate-50/50 dark:bg-slate-900/50">
+        <div className="flex-1 overflow-hidden bg-slate-50/50 dark:bg-transparent">
           {activeTab === 'users' ? <UserManagement /> : <SystemSettings />}
        </div>
     </div>

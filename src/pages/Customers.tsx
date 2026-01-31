@@ -108,9 +108,9 @@ export const Customers: React.FC = () => {
         />
       </div>
 
-      <div className="flex-1 overflow-auto rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm">
+      <div className="flex-1 overflow-auto rounded-xl border border-slate-200 dark:border-slate-700/50 bg-white dark:bg-slate-900/80 dark:backdrop-blur-sm shadow-sm">
         <table className="w-full text-left text-sm">
-          <thead className="sticky top-0 bg-slate-50 dark:bg-slate-800 text-xs uppercase text-slate-500 dark:text-slate-400 font-semibold border-b border-slate-200 dark:border-slate-700">
+          <thead className="sticky top-0 bg-slate-50 dark:bg-slate-800/80 text-xs uppercase text-slate-500 dark:text-slate-400 font-semibold border-b border-slate-200 dark:border-slate-700/50">
             <tr>
               <th className="px-6 py-4">Name</th>
               <th className="px-6 py-4">Phone</th>
@@ -119,14 +119,14 @@ export const Customers: React.FC = () => {
               <th className="px-6 py-4 text-center">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+          <tbody className="divide-y divide-slate-100 dark:divide-slate-700/50">
             {filteredCustomers.map((customer) => {
               const isDefaultCustomer = customer.name === 'Walk-in Customer';
               return (
               <tr key={customer.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
                 <td className="px-6 py-4 font-medium text-slate-900 dark:text-slate-100">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 dark:bg-blue-900/50 text-blue-600">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400">
                       <User size={16} />
                     </div>
                     {customer.name}
@@ -134,7 +134,7 @@ export const Customers: React.FC = () => {
                 </td>
                 <td className="px-6 py-4 text-slate-600 dark:text-slate-400">{customer.phone || '-'}</td>
                 <td className="px-6 py-4 text-slate-600 dark:text-slate-400">{customer.email || '-'}</td>
-                <td className="px-6 py-4 text-right font-medium text-emerald-600">
+                <td className="px-6 py-4 text-right font-medium text-emerald-600 dark:text-emerald-400">
                   {currencySymbol}{customer.totalSpent.toFixed(2)}
                 </td>
                 <td className="px-6 py-4">
@@ -143,7 +143,7 @@ export const Customers: React.FC = () => {
                       variant="ghost" 
                       size="icon" 
                       onClick={() => handleOpenModal(customer)} 
-                      className="text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/50"
+                      className="text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-500/20"
                       disabled={isDefaultCustomer}
                       title={isDefaultCustomer ? "Cannot edit default customer" : "Edit"}
                     >
@@ -153,7 +153,7 @@ export const Customers: React.FC = () => {
                       variant="ghost" 
                       size="icon" 
                       onClick={() => handleDelete(customer)} 
-                      className="text-slate-400 dark:text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/50"
+                      className="text-slate-400 hover:text-red-600 hover:bg-red-50 dark:text-slate-500 dark:hover:text-red-400 dark:hover:bg-red-500/20"
                       disabled={isDefaultCustomer}
                       title={isDefaultCustomer ? "Cannot delete default customer" : "Delete"}
                     >
@@ -177,12 +177,12 @@ export const Customers: React.FC = () => {
       {/* Modal */}
       <AnimatePresence>
         {isModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 dark:bg-slate-800/60 backdrop-blur-sm p-4">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-xl p-4">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="w-full max-w-md rounded-2xl bg-white dark:bg-slate-900 p-6 shadow-2xl"
+              className="w-full max-w-md rounded-2xl bg-white dark:bg-slate-900/95 dark:backdrop-blur-xl p-6 shadow-2xl dark:border dark:border-slate-700/50"
             >
               <div className="mb-6 flex items-center justify-between">
                 <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">

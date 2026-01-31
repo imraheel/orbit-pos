@@ -110,9 +110,9 @@ export const ProductList: React.FC = () => {
   };
 
   return (
-    <div className="flex h-full flex-col bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+    <div className="flex h-full flex-col bg-white dark:bg-slate-900/80 dark:backdrop-blur-sm rounded-xl shadow-sm border border-slate-200 dark:border-slate-700/50 overflow-hidden">
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center justify-between gap-4 p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-100/50 dark:bg-slate-800/50">
+      <div className="flex flex-wrap items-center justify-between gap-4 p-4 border-b border-slate-200 dark:border-slate-700/50 bg-slate-100/50 dark:bg-slate-800/50">
         <div className="flex flex-1 items-center gap-3">
             <Input
                 icon={<Search size={18} />}
@@ -143,7 +143,7 @@ export const ProductList: React.FC = () => {
       {/* Table */}
       <div className="flex-1 overflow-auto">
         <table className="w-full text-left text-sm">
-          <thead className="sticky top-0 bg-slate-50 dark:bg-slate-800 text-xs uppercase text-slate-500 dark:text-slate-400 font-semibold border-b border-slate-200 dark:border-slate-700">
+          <thead className="sticky top-0 bg-slate-50 dark:bg-slate-800/80 text-xs uppercase text-slate-500 dark:text-slate-400 font-semibold border-b border-slate-200 dark:border-slate-700/50">
             <tr>
               <th className="px-6 py-4">Product Name</th>
               <th className="px-6 py-4">Barcode</th>
@@ -153,7 +153,7 @@ export const ProductList: React.FC = () => {
               <th className="px-6 py-4 text-center">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+          <tbody className="divide-y divide-slate-100 dark:divide-slate-700/50">
             {filteredProducts.map((product) => {
               const category = categories.find(c => c.id === product.categoryId);
               return (
@@ -177,17 +177,17 @@ export const ProductList: React.FC = () => {
                   <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end gap-2">
                         {product.stock < 10 && <AlertCircle size={14} className="text-amber-500" />}
-                        <span className={cn("font-medium", product.stock < 10 ? 'text-amber-600' : 'text-slate-700 dark:text-slate-300')}>
+                        <span className={cn("font-medium", product.stock < 10 ? 'text-amber-600 dark:text-amber-400' : 'text-slate-700 dark:text-slate-300')}>
                             {product.stock}
                         </span>
                     </div>
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex justify-center gap-2">
-                        <Button variant="ghost" size="icon" onClick={() => handleOpenModal(product)} className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/50">
+                        <Button variant="ghost" size="icon" onClick={() => handleOpenModal(product)} className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-500/20">
                         <Edit2 size={16} />
                         </Button>
-                        <Button variant="ghost" size="icon" onClick={() => handleDelete(product)} className="text-slate-400 dark:text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/50">
+                        <Button variant="ghost" size="icon" onClick={() => handleDelete(product)} className="text-slate-400 hover:text-red-600 hover:bg-red-50 dark:text-slate-500 dark:hover:text-red-400 dark:hover:bg-red-500/20">
                         <Trash2 size={16} />
                         </Button>
                     </div>
@@ -209,12 +209,12 @@ export const ProductList: React.FC = () => {
       {/* Modal */}
       <AnimatePresence>
         {isModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 dark:bg-slate-800/60 backdrop-blur-sm p-4">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-xl p-4">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="w-full max-w-lg rounded-2xl bg-white dark:bg-slate-900 p-6 shadow-2xl"
+              className="w-full max-w-lg rounded-2xl bg-white dark:bg-slate-900/95 dark:backdrop-blur-xl p-6 shadow-2xl dark:border dark:border-slate-700/50"
             >
               <div className="mb-6 flex items-center justify-between">
                 <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">
@@ -253,7 +253,7 @@ export const ProductList: React.FC = () => {
                         <select
                             value={formData.categoryId}
                             onChange={(e) => setFormData({ ...formData, categoryId: Number(e.target.value) })}
-                            className="w-full h-10 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 text-sm dark:text-slate-100 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                            className="w-full h-10 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 px-3 text-sm dark:text-slate-100 focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-500/20"
                         >
                             <option value={0} disabled>Select Category</option>
                             {categories.map(c => (
@@ -279,7 +279,7 @@ export const ProductList: React.FC = () => {
                         <select
                             value={formData.taxType || 'none'}
                             onChange={(e) => setFormData({ ...formData, taxType: e.target.value as any })}
-                            className="w-full h-10 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 text-sm dark:text-slate-100 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                            className="w-full h-10 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 px-3 text-sm dark:text-slate-100 focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-500/20"
                         >
                             <option value="none">None</option>
                             <option value="percentage">Percentage (%)</option>

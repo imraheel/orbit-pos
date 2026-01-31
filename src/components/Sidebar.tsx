@@ -27,13 +27,14 @@ export const Sidebar: React.FC = () => {
   return (
     <aside 
       className={cn(
-        "flex h-screen flex-col border-r border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 transition-all duration-300 ease-in-out overflow-hidden",
+        "flex h-screen flex-col border-r border-slate-200 bg-white transition-all duration-300 ease-in-out overflow-hidden",
+        "dark:border-slate-800 dark:bg-slate-900",
         isSidebarOpen ? "w-64" : "w-0 border-none"
       )}
     >
-      <div className="flex h-16 items-center px-6 border-b border-slate-200 dark:border-slate-700 min-w-[16rem]">
+      <div className="flex h-16 items-center px-6 border-b border-slate-200 dark:border-slate-800 min-w-[16rem]">
         <div className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-lg">
+          <div className="h-8 w-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-blue-500/30">
             O
           </div>
           <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Orbit POS</h1>
@@ -47,16 +48,27 @@ export const Sidebar: React.FC = () => {
             to={item.to}
             className={({ isActive }) =>
               cn(
-                'flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors',
-                 isActive
-                   ? 'bg-blue-50 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300'
-                   : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100'
+                'flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-all duration-200',
+                isActive
+                  ? 'bg-blue-50 text-blue-700 border-l-2 border-blue-600'
+                  : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900',
+                // Dark mode styles
+                isActive
+                  ? 'dark:bg-blue-500/20 dark:text-blue-400 dark:border-blue-500'
+                  : 'dark:text-slate-400 dark:hover:bg-slate-800/80 dark:hover:text-slate-200'
               )
             }
           >
             {({ isActive }) => (
               <>
-                <item.icon size={20} className={isActive ? "text-blue-600" : "text-slate-400 dark:text-slate-500"} />
+                <item.icon 
+                  size={20} 
+                  className={cn(
+                    "transition-colors",
+                    isActive ? "text-blue-600" : "text-slate-400",
+                    isActive ? "dark:text-blue-400" : "dark:text-slate-500"
+                  )} 
+                />
                 {item.label}
               </>
             )}
@@ -64,10 +76,10 @@ export const Sidebar: React.FC = () => {
         ))}
       </nav>
 
-       <div className="border-t border-slate-200 dark:border-slate-700 p-4 min-w-[16rem]">
+       <div className="border-t border-slate-200 dark:border-slate-800 p-4 min-w-[16rem]">
         <button
           onClick={handleLogout}
-          className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-slate-500 dark:text-slate-400 hover:bg-red-50 dark:hover:bg-red-900/50 hover:text-red-600 transition-colors"
+          className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-slate-500 hover:bg-red-50 hover:text-red-600 transition-all duration-200 dark:text-slate-400 dark:hover:bg-red-500/20 dark:hover:text-red-400"
         >
           <LogOut size={20} />
           Logout

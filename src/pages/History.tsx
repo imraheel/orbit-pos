@@ -60,9 +60,9 @@ export const History: React.FC = () => {
         </div>
       </div>
 
-      <div className="flex-1 overflow-auto rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm">
+      <div className="flex-1 overflow-auto rounded-xl border border-slate-200 dark:border-slate-700/50 bg-white dark:bg-slate-900/80 dark:backdrop-blur-sm shadow-sm">
         <table className="w-full text-left text-sm">
-          <thead className="sticky top-0 bg-slate-50 dark:bg-slate-800 text-xs uppercase text-slate-500 dark:text-slate-400 font-semibold border-b border-slate-200 dark:border-slate-700">
+          <thead className="sticky top-0 bg-slate-50 dark:bg-slate-800/80 text-xs uppercase text-slate-500 dark:text-slate-400 font-semibold border-b border-slate-200 dark:border-slate-700/50">
             <tr>
               <th className="px-6 py-4">Order ID</th>
               <th className="px-6 py-4">Date & Time</th>
@@ -71,10 +71,10 @@ export const History: React.FC = () => {
               <th className="px-6 py-4 text-center">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+          <tbody className="divide-y divide-slate-100 dark:divide-slate-700/50">
             {filteredOrders.map((order) => (
               <tr key={order.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
-                <td className="px-6 py-4 font-mono font-bold text-blue-600">#{order.id}</td>
+                <td className="px-6 py-4 font-mono font-bold text-blue-600 dark:text-blue-400">#{order.id}</td>
                 <td className="px-6 py-4">
                   <div className="flex flex-col">
                     <span className="font-medium text-slate-900 dark:text-slate-100 flex items-center gap-1">
@@ -89,7 +89,7 @@ export const History: React.FC = () => {
                 </td>
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-2">
-                    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
+                    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400">
                       <User size={14} />
                     </div>
                     <span className="font-medium text-slate-700 dark:text-slate-300">
@@ -106,7 +106,7 @@ export const History: React.FC = () => {
                         variant="ghost" 
                         size="sm" 
                         onClick={() => setSelectedOrder(order)}
-                        className="text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/50"
+                        className="text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-500/20"
                     >
                         <Eye size={16} className="mr-2" />
                         View
@@ -129,12 +129,12 @@ export const History: React.FC = () => {
       {/* Order Detail Modal */}
       <AnimatePresence>
         {selectedOrder && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 dark:bg-slate-800/60 backdrop-blur-sm p-4">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-xl p-4">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="w-full max-w-lg rounded-2xl bg-white dark:bg-slate-900 p-6 shadow-2xl"
+              className="w-full max-w-lg rounded-2xl bg-white dark:bg-slate-900/95 dark:backdrop-blur-xl p-6 shadow-2xl dark:border dark:border-slate-700/50"
             >
                <div className="mb-6 flex items-center justify-between">
                  <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">Order Details</h2>
@@ -144,9 +144,9 @@ export const History: React.FC = () => {
               </div>
 
               <div className="space-y-6">
-                 <div className="flex items-center justify-between rounded-xl bg-slate-50 dark:bg-slate-800 p-4 border border-slate-100 dark:border-slate-700">
+                 <div className="flex items-center justify-between rounded-xl bg-slate-50 dark:bg-slate-800/50 p-4 border border-slate-100 dark:border-slate-700/50">
                    <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-600">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400">
                          <Receipt size={20} />
                       </div>
                       <div>
@@ -158,43 +158,43 @@ export const History: React.FC = () => {
                        <p className="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider font-bold">Processed By</p>
                        <p className="font-bold text-slate-900 dark:text-slate-100 text-sm">{users[selectedOrder.userId]?.username || 'System'}</p>
                    </div>
-                </div>
+                 </div>
 
-                <div className="space-y-3">
-                   <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-                     Items Purchased
-                  </h3>
-                   <div className="max-h-48 overflow-y-auto space-y-0 rounded-lg border border-slate-100 dark:border-slate-700">
-                    {selectedOrder.items.map((item, idx) => (
-                      <div key={idx} className="flex justify-between text-sm p-3 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 border-b border-slate-100 dark:border-slate-700 last:border-0">
-                         <div className="flex gap-2">
-                             <span className="font-bold text-slate-500 dark:text-slate-400">{item.quantity}x</span>
-                             <span className="text-slate-700 dark:text-slate-300">{item.productName}</span>
-                         </div>
-                         <span className="font-bold text-slate-900 dark:text-slate-100">{currencySymbol}{(calculateGrossPrice(item as any) * item.quantity).toFixed(2)}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                 <div className="space-y-3">
+                    <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                      Items Purchased
+                   </h3>
+                    <div className="max-h-48 overflow-y-auto space-y-0 rounded-lg border border-slate-100 dark:border-slate-700/50">
+                     {selectedOrder.items.map((item, idx) => (
+                       <div key={idx} className="flex justify-between text-sm p-3 bg-white dark:bg-slate-800/30 hover:bg-slate-50 dark:hover:bg-slate-800/50 border-b border-slate-100 dark:border-slate-700/50 last:border-0">
+                          <div className="flex gap-2">
+                              <span className="font-bold text-slate-500 dark:text-slate-400">{item.quantity}x</span>
+                              <span className="text-slate-700 dark:text-slate-300">{item.productName}</span>
+                          </div>
+                          <span className="font-bold text-slate-900 dark:text-slate-100">{currencySymbol}{(calculateGrossPrice(item as any) * item.quantity).toFixed(2)}</span>
+                       </div>
+                     ))}
+                   </div>
+                 </div>
 
-                 <div className="space-y-2 border-t border-slate-200 dark:border-slate-700 pt-4">
-                   <div className="flex justify-between text-sm text-slate-500 dark:text-slate-400">
-                     <span>Subtotal (excl. tax)</span>
-                     <span className="font-medium text-slate-700 dark:text-slate-300">{currencySymbol}{selectedOrder.subtotal.toFixed(2)}</span>
-                   </div>
-                   <div className="flex justify-between text-sm text-slate-500 dark:text-slate-400">
-                     <span>Tax</span>
-                     <span className="font-medium text-slate-700 dark:text-slate-300">{currencySymbol}{selectedOrder.tax.toFixed(2)}</span>
-                   </div>
-                   <div className="flex justify-between text-xl font-black text-slate-900 dark:text-slate-100 pt-2">
-                     <span>Total</span>
-                     <span className="text-blue-600">{currencySymbol}{selectedOrder.total.toFixed(2)}</span>
-                   </div>
-                </div>
+                  <div className="space-y-2 border-t border-slate-200 dark:border-slate-700/50 pt-4">
+                    <div className="flex justify-between text-sm text-slate-500 dark:text-slate-400">
+                      <span>Subtotal (excl. tax)</span>
+                      <span className="font-medium text-slate-700 dark:text-slate-300">{currencySymbol}{selectedOrder.subtotal.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between text-sm text-slate-500 dark:text-slate-400">
+                      <span>Tax</span>
+                      <span className="font-medium text-slate-700 dark:text-slate-300">{currencySymbol}{selectedOrder.tax.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between text-xl font-black text-slate-900 dark:text-slate-100 pt-2">
+                      <span>Total</span>
+                      <span className="text-blue-600 dark:text-blue-400">{currencySymbol}{selectedOrder.total.toFixed(2)}</span>
+                    </div>
+                 </div>
               </div>
 
               <div className="mt-8">
-                  <Button className="w-full h-12 text-lg">
+                  <Button className="w-full h-12 text-lg shadow-lg shadow-blue-500/20 dark:shadow-lg dark:shadow-blue-500/30">
                     <Receipt size={20} className="mr-2" />
                     Print Receipt
                   </Button>

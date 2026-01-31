@@ -24,7 +24,7 @@ export const POS: React.FC = () => {
   });
 
   return (
-    <div className="flex h-full overflow-hidden bg-gray-50 dark:bg-slate-900">
+    <div className="flex h-full overflow-hidden bg-slate-50 dark:bg-transparent">
       <ProductGrid onProductSelect={addItem} />
       <CartSidebar onCheckout={() => setIsCheckoutOpen(true)} />
       

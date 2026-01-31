@@ -115,12 +115,12 @@ export const CategoryList: React.FC = () => {
       {/* Modal */}
       <AnimatePresence>
         {isModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 dark:bg-slate-800/60 backdrop-blur-sm p-4">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-xl p-4">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="w-full max-w-sm rounded-2xl bg-white dark:bg-slate-900 p-6 shadow-2xl"
+              className="w-full max-w-sm rounded-2xl bg-white dark:bg-slate-900/95 dark:backdrop-blur-xl p-6 shadow-2xl dark:border dark:border-slate-700/50"
             >
               <div className="mb-6 flex items-center justify-between">
                 <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">
@@ -159,8 +159,8 @@ export const CategoryList: React.FC = () => {
                           type="button"
                           onClick={() => setFormData({ ...formData, color })}
                           className={cn(
-                              "h-8 w-8 rounded-full transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-400",
-                              formData.color === color ? "ring-2 ring-offset-2 ring-slate-900 scale-110" : ""
+                              "h-8 w-8 rounded-full transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-400 dark:focus:ring-slate-500",
+                              formData.color === color ? "ring-2 ring-offset-2 ring-slate-900 dark:ring-slate-100 scale-110" : ""
                           )}
                           style={{ backgroundColor: color }}
                         />

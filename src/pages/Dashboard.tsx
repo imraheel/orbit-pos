@@ -67,8 +67,8 @@ export const Dashboard: React.FC = () => {
     <div className="space-y-8 max-w-[1600px] mx-auto">
       <div className="flex items-center justify-between">
         <div>
-            <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Dashboard</h1>
-            <p className="text-slate-500 mt-1">Overview of your store's performance today.</p>
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">Dashboard</h1>
+            <p className="text-slate-500 dark:text-slate-400 mt-1">Overview of your store's performance today.</p>
         </div>
         <div className="flex gap-2">
             <Button variant="outline" onClick={() => fetchStats()}>
@@ -92,8 +92,8 @@ export const Dashboard: React.FC = () => {
                 <CardContent className="p-6">
                     <div className="flex items-start justify-between">
                         <div>
-                            <p className="text-sm font-medium text-slate-500 uppercase tracking-wide">{card.label}</p>
-                            <p className="mt-2 text-3xl font-bold text-slate-900">{card.value}</p>
+                            <p className="text-sm font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">{card.label}</p>
+                            <p className="mt-2 text-3xl font-bold text-slate-900 dark:text-slate-100">{card.value}</p>
                         </div>
                         <div className={cn("flex h-12 w-12 items-center justify-center rounded-xl", card.bg, card.color)}>
                             <card.icon size={24} />
@@ -133,9 +133,9 @@ export const Dashboard: React.FC = () => {
                         </div>
                         <div className="text-right">
                         <p className="font-bold text-slate-900 dark:text-slate-100">{currencySymbol}{order.total.toFixed(2)}</p>
-                        <span className="inline-flex items-center rounded-full bg-emerald-50 dark:bg-emerald-900 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:text-emerald-100 ring-1 ring-inset ring-emerald-600/20 dark:ring-emerald-400/20">
-                            Completed
-                        </span>
+                         <span className="inline-flex items-center rounded-full bg-emerald-50 dark:bg-emerald-500/20 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:text-emerald-400 ring-1 ring-inset ring-emerald-600/20 dark:ring-emerald-500/30">
+                             Completed
+                         </span>
                         </div>
                     </div>
                     ))}

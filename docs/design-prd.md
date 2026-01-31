@@ -28,6 +28,30 @@ We will stick to a professional, neutral base with strong semantic colors.
     *   **Warning:** `amber-500` (Low stock)
     *   **Error/Destructive:** `red-600` (Delete, cancel, out of stock)
 
+### Dark Mode Color Palette
+
+Dark mode uses a sophisticated deep navy base with vibrant accents for a premium, modern feel:
+
+*   **Primary (Brand):** `blue-500` with glow effects (`shadow-blue-500/20`)
+*   **Backgrounds:**
+    *   `bg-slate-950` (App background - deep navy with optional gradient overlay)
+    *   `bg-slate-900/80` (Cards, Panels, Modals with backdrop blur)
+    *   `bg-slate-800` (Sidebar, elevated surfaces)
+    *   `bg-slate-800/50` (Input fields, secondary backgrounds)
+*   **Text:**
+    *   `text-slate-100` (Headings, primary data)
+    *   `text-slate-400` (Labels, secondary info)
+    *   `text-slate-500` (Placeholders, disabled text)
+*   **Borders:** `border-slate-700/50` (Subtle, semi-transparent)
+*   **Semantic (Vibrant Dark Mode):**
+    *   **Success:** `emerald-400` text on `emerald-500/20` background with `border-emerald-500/30`
+    *   **Warning:** `amber-400` text on `amber-500/20` background with `border-amber-500/30`
+    *   **Error/Destructive:** `red-400` text on `red-500/20` background with `border-red-500/30`
+*   **Interactive Glow Effects:**
+    *   Primary buttons: `shadow-lg shadow-blue-500/20`
+    *   Focus rings: `ring-2 ring-blue-500/30`
+    *   Success indicators: `shadow-lg shadow-emerald-500/50`
+
 ### Typography
 *   **Font Family:** System Sans-Serif (San Francisco, Inter, Segoe UI) for native feel and performance.
 *   **Weights:** Regular (400), Medium (500), Semibold (600).
@@ -58,15 +82,29 @@ We will stick to a professional, neutral base with strong semantic colors.
     *   Height: `h-16`.
     *   Context: Current Page Title, Global Search (optional), User Profile/Logout, Connectivity/Sync Status.
 *   **Main Content:**
-    *   Background: `bg-slate-50`.
+    *   Background: `bg-slate-50` (Light) / `bg-slate-950` (Dark with gradient).
     *   Padding: `p-6`.
     *   Scrollable area independent of Sidebar/Topbar.
+
+### Dark Mode Layout Structure
+*   **Sidebar (Dark):**
+    *   Background: `bg-slate-900` with `border-r border-slate-800`.
+    *   Active state: `bg-blue-500/20 text-blue-400 border-l-2 border-blue-500`.
+    *   Hover: `hover:bg-slate-800/80`.
+*   **Topbar (Dark):**
+    *   Glassmorphism effect: `bg-slate-900/80 backdrop-blur`.
+    *   Border: `border-b border-slate-800`.
+*   **Main Content (Dark):**
+    *   Background: `bg-slate-950` with subtle radial gradient.
+    *   Cards: `bg-slate-900/80 backdrop-blur-sm` with elevated borders.
 
 ---
 
 ## 4. Component Library Plan
 
 ### Atoms
+
+#### Light Mode
 1.  **Button:**
     *   Variants: `primary` (Solid Blue), `secondary` (Outline/Ghost), `destructive` (Solid Red).
     *   Sizes: `sm` (compact tables), `md` (default), `lg` (POS actions).
@@ -77,6 +115,30 @@ We will stick to a professional, neutral base with strong semantic colors.
     *   Pill-shaped status indicators (Stock levels, Order status).
 4.  **Card:**
     *   White background, standard border, subtle shadow.
+
+#### Dark Mode Enhancements
+1.  **Button:**
+    *   **Primary:** `bg-blue-600 hover:bg-blue-500` with `shadow-lg shadow-blue-500/20` glow effect.
+    *   **Secondary:** `bg-slate-800 hover:bg-slate-700 text-slate-200`.
+    *   **Destructive:** `bg-red-600 hover:bg-red-500` with `shadow-lg shadow-red-500/20`.
+    *   **Ghost:** `hover:bg-slate-800 text-slate-300`.
+    *   All buttons: Smooth transitions with `duration-200`.
+2.  **Input:**
+    *   Background: `bg-slate-800/50`.
+    *   Border: `border-slate-700 focus:border-blue-500`.
+    *   Text: `text-slate-100`.
+    *   Placeholder: `text-slate-500`.
+    *   Focus ring: `ring-2 ring-blue-500/20`.
+3.  **Badge:**
+    *   **Success:** `bg-emerald-500/20 text-emerald-400 border-emerald-500/30`.
+    *   **Warning:** `bg-amber-500/20 text-amber-400 border-amber-500/30`.
+    *   **Error:** `bg-red-500/20 text-red-400 border-red-500/30`.
+    *   All badges: Semi-transparent backgrounds with colored borders.
+4.  **Card:**
+    *   Background: `bg-slate-900/80` with `backdrop-blur-sm`.
+    *   Border: `border-slate-700/50`.
+    *   Shadow: `shadow-lg shadow-black/20`.
+    *   Hover: `hover:border-slate-600/50 hover:shadow-xl`.
 
 ### Molecules
 1.  **ProductCard (POS):**
@@ -161,4 +223,12 @@ We will stick to a professional, neutral base with strong semantic colors.
 - [ ] **Dashboard:** Build `StatCard` and layout the `Dashboard.tsx` grid.
 - [ ] **Login:** Redesign `Login.tsx` with a numeric PIN pad UI.
 - [ ] **Transitions:** Add subtle `framer-motion` layout animations for page transitions.
+
+### Phase 5: Dark Mode Enhancement
+- [ ] **Global Styles:** Update CSS with dark mode variables and gradient backgrounds.
+- [ ] **UI Components:** Enhance Button, Card, Input, Badge with glow effects and vibrant colors.
+- [ ] **Layout Components:** Update MainLayout, Sidebar, Topbar with deep navy theme.
+- [ ] **Page Components:** Apply dark mode styling to all pages (POS, Inventory, History, Settings, Login).
+- [ ] **POS Enhancements:** Product grid hover effects, cart panel glassmorphism, checkout modal polish.
+- [ ] **Final Review:** Ensure consistency, accessibility, and smooth theme transitions.
 
