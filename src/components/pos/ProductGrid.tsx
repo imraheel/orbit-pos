@@ -3,8 +3,27 @@ import { db, IProduct, ICategory } from '../../db';
 import { Search, Tag, Package } from 'lucide-react';
 import { cn, calculateGrossPrice } from '../../lib/utils';
 import { Input } from '../ui/Input';
-import { Badge } from '../ui/Badge';
 import { useSettings } from '../../store/useSettings';
+
+interface ProductImageProps {
+  imageUrl: string
+}
+
+const ProductImage: React.FC<ProductImageProps> = ({ imageUrl }) => {
+  const [src, setSrc] = React.useState<string>('')
+
+  React.useEffect(() => {
+    if (imageUrl) {
+      window.electronAPI.getProductImage(imageUrl).then((base64) => {
+        if (base64) setSrc(base64)
+      })
+    }
+  }, [imageUrl])
+
+  if (!src) return null
+
+  return <img src={src} alt="" className="w-full h-full object-cover" />
+}
 
 interface ProductGridProps {
   onProductSelect: (product: IProduct) => void;
@@ -90,42 +109,34 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ onProductSelect }) => 
 
       {/* Grid */}
       <div className="flex-1 overflow-y-auto p-4">
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
           {filteredProducts.map((product) => (
             <button
               key={product.id}
               onClick={() => onProductSelect(product)}
               className={cn(
-                "group flex flex-col overflow-hidden rounded-xl border text-left transition-all duration-200",
+                "group flex items-center gap-3 p-3 rounded-xl border text-left transition-all duration-200",
                 "bg-white dark:bg-slate-900/80 dark:backdrop-blur-sm",
                 "border-slate-200 dark:border-slate-700/50",
                 "hover:border-blue-500 dark:hover:border-blue-500/50",
-                "hover:shadow-lg dark:hover:shadow-lg dark:hover:shadow-blue-500/10",
-                "active:scale-95 active:ring-2 active:ring-blue-500/20"
+                "hover:shadow-md dark:hover:shadow-lg dark:hover:shadow-blue-500/10",
+                "active:scale-[0.98] active:ring-2 active:ring-blue-500/20"
               )}
             >
-               <div className="aspect-square w-full bg-slate-100 dark:bg-slate-800/50 flex items-center justify-center relative">
-                {product.imageUrl ? (
-                  <img src={product.imageUrl} alt={product.name} className="h-full w-full object-cover" />
-                ) : (
-                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-slate-200 dark:bg-slate-700 text-slate-400 dark:text-slate-500 group-hover:bg-blue-100 dark:group-hover:bg-blue-500/20 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors">
-                    <Tag size={32} />
-                  </div>
-                )}
-                <div className="absolute bottom-2 right-2">
-                   <Badge 
-                     variant={product.stock <= 5 ? "destructive" : "secondary"} 
-                     className="bg-white/90 dark:bg-slate-900/90 backdrop-blur shadow-sm text-xs border border-slate-100 dark:border-slate-700"
-                   >
-                     {product.stock} left
-                   </Badge>
-                </div>
+              <div className="w-14 h-14 rounded-lg bg-slate-100 dark:bg-slate-800/50 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                  {product.imageUrl ? (
+                    <ProductImage imageUrl={product.imageUrl} />
+                  ) : (
+                    <div className="flex items-center justify-center text-slate-400 dark:text-slate-500 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors">
+                      <Tag size={20} />
+                    </div>
+                  )}
               </div>
-              <div className="p-3">
-                 <h3 className="line-clamp-2 text-sm font-medium text-slate-700 dark:text-slate-300 group-hover:text-blue-700 dark:group-hover:text-blue-400 transition-colors">
-                   {product.name}
+              <div className="flex-1 min-w-0">
+                 <h3 className="text-sm font-medium text-slate-700 dark:text-slate-300 group-hover:text-blue-700 dark:group-hover:text-blue-400 transition-colors truncate">
+                    {product.name}
                  </h3>
-                 <p className="mt-1 text-base font-bold text-slate-900 dark:text-slate-100">{currencySymbol}{calculateGrossPrice(product).toFixed(2)}</p>
+                 <p className="text-sm font-bold text-slate-900 dark:text-slate-100">{currencySymbol}{calculateGrossPrice(product).toFixed(2)}</p>
               </div>
             </button>
           ))}

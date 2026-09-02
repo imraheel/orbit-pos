@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { db, IUser } from '../db';
+import { db, IUser, UserRole } from '../db';
 import { Plus, Trash2, Edit2, Save, X, Search, ShieldCheck, ShieldAlert, Users, Settings as SettingsIcon, DollarSign } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../components/ui/Button';
@@ -8,6 +8,26 @@ import { Badge } from '../components/ui/Badge';
 import { ConfirmDialog } from '../components/ui/ConfirmDialog';
 import { useSettings } from '../store/useSettings';
 import { cn } from '../lib/utils';
+
+const roleLabels: Record<UserRole, string> = {
+  admin: 'Administrator',
+  manager: 'Store Manager',
+  cashier: 'Cashier',
+  bookkeeper: 'Bookkeeper',
+};
+
+const roleColors: Record<UserRole, { bg: string; text: string }> = {
+  admin: { bg: 'bg-purple-100 dark:bg-purple-900/30', text: 'text-purple-700 dark:text-purple-400' },
+  manager: { bg: 'bg-blue-100 dark:bg-blue-900/30', text: 'text-blue-700 dark:text-blue-400' },
+  cashier: { bg: 'bg-green-100 dark:bg-green-900/30', text: 'text-green-700 dark:text-green-400' },
+  bookkeeper: { bg: 'bg-amber-100 dark:bg-amber-900/30', text: 'text-amber-700 dark:text-amber-400' },
+};
+
+const RoleBadge: React.FC<{ role: UserRole }> = ({ role }) => (
+  <span className={cn('inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium', roleColors[role].bg, roleColors[role].text)}>
+    {roleLabels[role]}
+  </span>
+);
 
 const UserManagement: React.FC = () => {
   const [users, setUsers] = useState<IUser[]>([]);
@@ -18,6 +38,7 @@ const UserManagement: React.FC = () => {
   const [formData, setFormData] = useState({
     username: '',
     pinCode: '',
+    role: 'cashier' as UserRole,
     isActive: true,
   });
 
@@ -44,11 +65,12 @@ const UserManagement: React.FC = () => {
       setFormData({
         username: user.username,
         pinCode: user.pinCode,
+        role: user.role || 'cashier',
         isActive: user.isActive,
       });
     } else {
       setEditingUser(null);
-      setFormData({ username: '', pinCode: '', isActive: true });
+      setFormData({ username: '', pinCode: '', role: 'cashier', isActive: true });
     }
     setIsModalOpen(true);
   };
@@ -116,6 +138,7 @@ const UserManagement: React.FC = () => {
           <thead className="sticky top-0 bg-slate-50 dark:bg-slate-800/80 text-xs uppercase text-slate-500 dark:text-slate-400 font-semibold border-b border-slate-200 dark:border-slate-700/50">
             <tr>
               <th className="px-6 py-4">Username</th>
+              <th className="px-6 py-4">Role</th>
               <th className="px-6 py-4">PIN Code</th>
               <th className="px-6 py-4">Status</th>
               <th className="px-6 py-4 text-center">Actions</th>
@@ -127,6 +150,9 @@ const UserManagement: React.FC = () => {
               return (
               <tr key={user.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
                 <td className="px-6 py-4 font-medium text-slate-900 dark:text-slate-100">{user.username}</td>
+                <td className="px-6 py-4">
+                  <RoleBadge role={user.role} />
+                </td>
                 <td className="px-6 py-4 font-mono text-slate-500 dark:text-slate-400 tracking-widest">••••</td>
                 <td className="px-6 py-4">
                   <Badge variant={user.isActive ? "success" : "destructive"}>
@@ -169,7 +195,7 @@ const UserManagement: React.FC = () => {
             )})}
             {filteredUsers.length === 0 && (
               <tr>
-                <td colSpan={4} className="px-6 py-12 text-center text-slate-400 dark:text-slate-500">
+                <td colSpan={5} className="px-6 py-12 text-center text-slate-400 dark:text-slate-500">
                   No users found.
                 </td>
               </tr>
@@ -219,6 +245,20 @@ const UserManagement: React.FC = () => {
                     onChange={(e) => setFormData({ ...formData, pinCode: e.target.value })}
                     placeholder="••••"
                   />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Role</label>
+                  <select
+                    value={formData.role}
+                    onChange={(e) => setFormData({ ...formData, role: e.target.value as UserRole })}
+                    className="w-full h-10 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 px-3 text-sm dark:text-slate-100 focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                  >
+                    <option value="admin">Administrator</option>
+                    <option value="manager">Store Manager</option>
+                    <option value="cashier">Cashier</option>
+                    <option value="bookkeeper">Bookkeeper</option>
+                  </select>
                 </div>
 
                 <div className="flex items-center gap-3 rounded-lg border border-slate-200 dark:border-slate-700/50 p-4 bg-white dark:bg-slate-800/30">

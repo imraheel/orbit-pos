@@ -2,12 +2,14 @@ import Dexie, { Table } from 'dexie';
 
 // Enums & Types
 export type OrderStatus = 'completed' | 'hold' | 'cancelled';
+export type UserRole = 'admin' | 'manager' | 'cashier' | 'bookkeeper';
 
 // Interfaces
 export interface IUser {
   id?: number;
   username: string;
-  pinCode: string; // Hashed/Simple for now
+  pinCode: string;
+  role: UserRole;
   isActive: boolean;
 }
 
@@ -83,6 +85,21 @@ export class OrbitPOSDatabase extends Dexie {
   constructor() {
     super('OrbitPOSDB');
     
+    this.version(6).stores({
+      users: '++id, username, pinCode',
+      categories: '++id, name',
+      products: '++id, name, categoryId, barcode',
+      customers: '++id, name, &phone',
+      orders: '++id, customerId, status, createdAt, userId',
+      settings: '++id, &key'
+    }).upgrade(tx => {
+      return tx.table('users').toCollection().modify(user => {
+        if (!user.role) {
+          user.role = 'admin'
+        }
+      })
+    });
+
     this.version(5).stores({
       users: '++id, username, pinCode',
       categories: '++id, name',

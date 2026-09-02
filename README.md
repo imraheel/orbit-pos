@@ -89,14 +89,14 @@ The application uses IndexedDB for local storage with the following primary tabl
 
 ### Todo
 - [x] Add tax field in product, each product can have different tax amount
-- [ ] Add product images
-- [ ] Add user roles
+- [x] Add product images
+- [x] Add user roles
 	- Administrator: Has full, unrestricted access to all settings, financial data, user management, and inventory.
 	- Store Manager: Focuses strictly on inventory management and updating stock
 	- Cashier: Handles customer checkouts, processes basic payments, holds or scans items, and opens the cash drawer for daily sales.
 	- Bookkeeper: Has read-only access to financial logs, end-of-day reports, and billing invoices without operational POS register access.
-- [ ] Generate and Print order receipt
-- [ ] Add option to generate and print product barcode
+- [x] Generate and Print order receipt
+- [x] Add option to generate and print product barcode
 - [ ] Add and remove stock from inventory instead of updating products (stock management)
 - [ ] Implement auto update using electron-updater
 - [ ] Create electron native "about" menu and show application description and version

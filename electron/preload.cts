@@ -1,11 +1,15 @@
 import { contextBridge, ipcRenderer } from 'electron'
 
-// --------- Expose some API to the Renderer process ---------
-// Only expose a minimal, restricted API to the renderer process.
-// Generic access to ipcRenderer is disabled for security.
 contextBridge.exposeInMainWorld('electronAPI', {
-  // Add specific, safe IPC handlers here as needed.
-  // Example: 
-  // onMessage: (callback: any) => ipcRenderer.on('main-process-message', (_event, value) => callback(value)),
+  openImageDialog: () => ipcRenderer.invoke('dialog:openImage'),
+  saveProductImage: (base64Data: string, productId: number, extension: string) =>
+    ipcRenderer.invoke('image:save', { base64Data, productId, extension }),
+  getProductImage: (relativePath: string) =>
+    ipcRenderer.invoke('image:get', relativePath),
+  deleteProductImage: (relativePath: string) =>
+    ipcRenderer.invoke('image:delete', relativePath),
+  printReceipt: (data: any) => ipcRenderer.invoke('print:receipt', data),
+  printBarcode: (data: any) => ipcRenderer.invoke('print:barcode', data),
+  openCashDrawer: () => ipcRenderer.invoke('cashDrawer:open'),
 })
 

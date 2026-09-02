@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { db, IOrder, ICustomer, IUser } from '../db';
-import { Search, Eye, Receipt, User, Clock, X, Calendar } from 'lucide-react';
+import { Search, Eye, Receipt, User, Clock, X, Calendar, Printer } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { useSettings } from '../store/useSettings';
 import { calculateGrossPrice } from '../lib/utils';
+import { getReceiptData } from '../components/receipt/Receipt';
 
 export const History: React.FC = () => {
   const [orders, setOrders] = useState<IOrder[]>([]);
@@ -194,8 +195,24 @@ export const History: React.FC = () => {
               </div>
 
               <div className="mt-8">
-                  <Button className="w-full h-12 text-lg shadow-lg shadow-blue-500/20 dark:shadow-lg dark:shadow-blue-500/30">
-                    <Receipt size={20} className="mr-2" />
+                  <Button 
+                    className="w-full h-12 text-lg shadow-lg shadow-blue-500/20 dark:shadow-lg dark:shadow-blue-500/30"
+                    onClick={async () => {
+                      const customerName = selectedOrder.customerId 
+                        ? customers[selectedOrder.customerId]?.name 
+                        : 'Walk-in Customer'
+                      const data = getReceiptData(
+                        { 
+                          order: selectedOrder, 
+                          cashier: users[selectedOrder.userId] || null,
+                          customerName 
+                        },
+                        currencySymbol
+                      )
+                      await window.electronAPI.printReceipt(data)
+                    }}
+                  >
+                    <Printer size={20} className="mr-2" />
                     Print Receipt
                   </Button>
               </div>

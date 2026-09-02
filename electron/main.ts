@@ -1,6 +1,8 @@
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, ipcMain } from 'electron'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import { setupImageHandlers } from './images.js'
+import { setupPrintHandlers } from './print.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -29,7 +31,6 @@ function createWindow() {
     },
   })
 
-  // Test active push message to Renderer-process.
   win.webContents.on('did-finish-load', () => {
     win?.webContents.send('main-process-message', (new Date).toLocaleString())
   })
@@ -37,7 +38,6 @@ function createWindow() {
   if (VITE_DEV_SERVER_URL) {
     win.loadURL(VITE_DEV_SERVER_URL)
   } else {
-    // win.loadFile('dist/index.html')
     win.loadFile(path.join(distPath, 'index.html'))
   }
 }
@@ -54,4 +54,14 @@ app.on('activate', () => {
   }
 })
 
-app.whenReady().then(createWindow)
+app.whenReady().then(() => {
+  createWindow()
+
+  setupImageHandlers()
+  setupPrintHandlers()
+
+  ipcMain.handle('cashDrawer:open', async () => {
+    if (!win) return
+    win.webContents.send('cashDrawer:trigger')
+  })
+})

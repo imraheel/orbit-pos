@@ -4,20 +4,24 @@ import { LayoutDashboard, ShoppingCart, Package, Users, Settings, LogOut, Histor
 import { cn } from '../lib/utils';
 import { useAuth } from '../store/useAuth';
 import { useUI } from '../store/useUI';
+import { usePermission } from '@/hooks/usePermission';
 
 const navItems = [
-  { icon: LayoutDashboard, label: 'Dashboard', to: '/' },
-  { icon: ShoppingCart, label: 'POS', to: '/pos' },
-  { icon: History, label: 'History', to: '/history' },
-  { icon: Package, label: 'Inventory', to: '/inventory' },
-  { icon: Users, label: 'Customers', to: '/customers' },
-  { icon: Settings, label: 'Settings', to: '/settings' },
+  { icon: LayoutDashboard, label: 'Dashboard', to: '/', permission: 'view_pos' as const },
+  { icon: ShoppingCart, label: 'POS', to: '/pos', permission: 'view_pos' as const },
+  { icon: History, label: 'History', to: '/history', permission: 'view_history' as const },
+  { icon: Package, label: 'Inventory', to: '/inventory', permission: 'view_inventory' as const },
+  { icon: Users, label: 'Customers', to: '/customers', permission: 'view_customers' as const },
+  { icon: Settings, label: 'Settings', to: '/settings', permission: 'view_settings' as const },
 ];
 
 export const Sidebar: React.FC = () => {
   const logout = useAuth((state) => state.logout);
   const { isSidebarOpen } = useUI();
   const navigate = useNavigate();
+  const { hasPermission } = usePermission();
+
+  const visibleNavItems = navItems.filter((item) => hasPermission(item.permission));
 
   const handleLogout = () => {
     logout();
@@ -42,7 +46,7 @@ export const Sidebar: React.FC = () => {
       </div>
       
       <nav className="flex-1 space-y-1 p-4 min-w-[16rem]">
-        {navItems.map((item) => (
+        {visibleNavItems.map((item) => (
           <NavLink
             key={item.to}
             to={item.to}

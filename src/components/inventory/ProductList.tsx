@@ -1,13 +1,36 @@
 import React, { useState, useEffect } from 'react';
 import { db, IProduct, ICategory } from '../../db';
-import { Plus, Edit2, Trash2, Search, X, Save, AlertCircle } from 'lucide-react';
+import { Plus, Edit2, Trash2, Search, X, Save, AlertCircle, Package, Printer } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { Badge } from '../ui/Badge';
+import { ImageUpload } from '../ui/ImageUpload';
 import { cn, calculateGrossPrice } from '../../lib/utils';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
 import { useSettings } from '../../store/useSettings';
+import { printBarcode } from '../barcode/BarcodePrint';
+
+interface ProductImageProps {
+  imageUrl: string
+  className?: string
+}
+
+const ProductImage: React.FC<ProductImageProps> = ({ imageUrl, className }) => {
+  const [src, setSrc] = React.useState<string>('')
+
+  React.useEffect(() => {
+    if (imageUrl) {
+      window.electronAPI.getProductImage(imageUrl).then((base64) => {
+        if (base64) setSrc(base64)
+      })
+    }
+  }, [imageUrl])
+
+  if (!src) return null
+
+  return <img src={src} alt="" className={className} />
+}
 
 export const ProductList: React.FC = () => {
   const [products, setProducts] = useState<IProduct[]>([]);
@@ -27,7 +50,10 @@ export const ProductList: React.FC = () => {
     categoryId: 0,
     taxType: 'none',
     taxValue: 0,
+    imageUrl: undefined,
   });
+
+  const [tempImage, setTempImage] = useState<string | null>(null);
 
   // Delete Confirmation State
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
@@ -57,6 +83,7 @@ export const ProductList: React.FC = () => {
     if (product) {
       setEditingProduct(product);
       setFormData({ ...product });
+      setTempImage(null);
     } else {
       setEditingProduct(null);
       setFormData({
@@ -67,7 +94,9 @@ export const ProductList: React.FC = () => {
         categoryId: categories[0]?.id || 0,
         taxType: 'none',
         taxValue: 0,
+        imageUrl: undefined,
       });
+      setTempImage(null);
     }
     setIsModalOpen(true);
   };
@@ -76,9 +105,17 @@ export const ProductList: React.FC = () => {
     e.preventDefault();
     if (!formData.name || !formData.categoryId) return;
 
-    // Ensure numeric values
+    let finalImageUrl = formData.imageUrl;
+
+    if (tempImage && tempImage.startsWith('temp:')) {
+      const [, base64, extension] = tempImage.split(':');
+      const productId = editingProduct?.id || Date.now();
+      finalImageUrl = await window.electronAPI.saveProductImage(base64, productId, extension);
+    }
+
     const payload = {
       ...formData,
+      imageUrl: finalImageUrl,
       price: Number(formData.price),
       stock: Number(formData.stock),
       categoryId: Number(formData.categoryId),
@@ -92,6 +129,7 @@ export const ProductList: React.FC = () => {
     }
 
     setIsModalOpen(false);
+    setTempImage(null);
     fetchData();
   };
 
@@ -102,6 +140,9 @@ export const ProductList: React.FC = () => {
 
   const confirmDelete = async () => {
     if (productToDelete?.id) {
+      if (productToDelete.imageUrl) {
+        await window.electronAPI.deleteProductImage(productToDelete.imageUrl);
+      }
       await db.products.delete(productToDelete.id);
       fetchData();
       setIsConfirmOpen(false);
@@ -145,6 +186,7 @@ export const ProductList: React.FC = () => {
         <table className="w-full text-left text-sm">
           <thead className="sticky top-0 bg-slate-50 dark:bg-slate-800/80 text-xs uppercase text-slate-500 dark:text-slate-400 font-semibold border-b border-slate-200 dark:border-slate-700/50">
             <tr>
+              <th className="px-6 py-4">Image</th>
               <th className="px-6 py-4">Product Name</th>
               <th className="px-6 py-4">Barcode</th>
               <th className="px-6 py-4">Category</th>
@@ -158,6 +200,15 @@ export const ProductList: React.FC = () => {
               const category = categories.find(c => c.id === product.categoryId);
               return (
                 <tr key={product.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
+                  <td className="px-6 py-4">
+                    {product.imageUrl ? (
+                      <ProductImage imageUrl={product.imageUrl} className="w-10 h-10" />
+                    ) : (
+                      <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+                        <Package className="w-5 h-5 text-slate-400" />
+                      </div>
+                    )}
+                  </td>
                   <td className="px-6 py-4 font-medium text-slate-900 dark:text-slate-100">{product.name}</td>
                   <td className="px-6 py-4 font-mono text-slate-500 dark:text-slate-400 text-xs">{product.barcode}</td>
                   <td className="px-6 py-4">
@@ -184,6 +235,15 @@ export const ProductList: React.FC = () => {
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex justify-center gap-2">
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          onClick={() => printBarcode(product.barcode, product.name, product.price, currencySymbol)}
+                          className="text-slate-400 hover:text-purple-600 hover:bg-purple-50 dark:text-slate-500 dark:hover:text-purple-400 dark:hover:bg-purple-500/20"
+                          title="Print Barcode"
+                        >
+                        <Printer size={16} />
+                        </Button>
                         <Button variant="ghost" size="icon" onClick={() => handleOpenModal(product)} className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-500/20">
                         <Edit2 size={16} />
                         </Button>
@@ -197,7 +257,7 @@ export const ProductList: React.FC = () => {
             })}
             {filteredProducts.length === 0 && (
                 <tr>
-                    <td colSpan={6} className="px-6 py-12 text-center text-slate-400 dark:text-slate-500">
+                    <td colSpan={7} className="px-6 py-12 text-center text-slate-400 dark:text-slate-500">
                         No products found matching your criteria.
                     </td>
                 </tr>
@@ -226,7 +286,16 @@ export const ProductList: React.FC = () => {
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="flex gap-6">
+                  <div className="flex-shrink-0">
+                    <label className="text-sm font-medium text-slate-700 dark:text-slate-300 block mb-2">Product Image</label>
+                    <ImageUpload
+                      value={tempImage ? tempImage : (formData.imageUrl || null)}
+                      onChange={(value) => setTempImage(value)}
+                    />
+                  </div>
+
+                  <div className="flex-1 grid grid-cols-2 gap-4">
                     <div className="col-span-2 space-y-1">
                         <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Product Name</label>
                         <Input
@@ -313,6 +382,7 @@ export const ProductList: React.FC = () => {
                             onChange={(e) => setFormData({ ...formData, stock: Number(e.target.value) })}
                         />
                     </div>
+                  </div>
                 </div>
 
                 <div className="mt-8 flex justify-end gap-3">

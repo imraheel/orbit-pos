@@ -7,7 +7,8 @@ export const seedDatabase = async () => {
     // Default Admin
     await db.users.add({
       username: 'admin',
-      pinCode: '1234', // Simple PIN for now
+      pinCode: '1234',
+      role: 'admin',
       isActive: true,
     });
     console.log('Seeded default admin user');

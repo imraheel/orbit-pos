@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import { useCart } from '../../store/useCart';
 import { db, IOrder, IOrderItem, ICustomer } from '../../db';
 import { useAuth } from '../../store/useAuth';
-import { X, CheckCircle2, Banknote, CreditCard, Loader2, User, UserPlus } from 'lucide-react';
+import { X, CheckCircle2, Banknote, CreditCard, Loader2, User, UserPlus, Printer } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../ui/Button';
 import { cn, calculateGrossPrice } from '../../lib/utils';
 import { useSettings } from '../../store/useSettings';
 import { Input } from '../ui/Input';
+import { getReceiptData } from '../receipt/Receipt';
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -23,6 +24,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
   const [amountReceived, setAmountReceived] = useState<string>('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [completedOrder, setCompletedOrder] = useState<IOrder | null>(null);
 
   // Simplified Customer State
   const [phoneInput, setPhoneInput] = useState('');
@@ -124,7 +126,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
       };
 
       // 1. Save Order
-      await db.orders.add(order);
+      const orderId = await db.orders.add(order);
+      const savedOrder = { ...order, id: orderId } as IOrder;
 
       // 2. Update Stock Levels
       for (const item of items) {
@@ -147,9 +150,11 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
       }
 
       setIsSuccess(true);
+      setCompletedOrder(savedOrder);
       setTimeout(() => {
         clearCart();
         setIsSuccess(false);
+        setCompletedOrder(null);
         setAmountReceived('');
         setPhoneInput('');
         setNameInput('');
@@ -363,6 +368,22 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
             </div>
             <h2 className="mb-2 text-3xl font-black text-slate-800 dark:text-slate-100">Payment Successful!</h2>
             <p className="text-slate-500 dark:text-slate-400 max-w-xs">Order has been saved and stock levels have been updated.</p>
+            {completedOrder && (
+              <Button
+                onClick={async () => {
+                  const data = getReceiptData(
+                    { order: completedOrder, cashier: user },
+                    currencySymbol
+                  )
+                  await window.electronAPI.printReceipt(data)
+                }}
+                className="mt-6"
+                variant="outline"
+              >
+                <Printer size={18} className="mr-2" />
+                Print Receipt
+              </Button>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
