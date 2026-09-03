@@ -100,6 +100,6 @@ The application uses IndexedDB for local storage with the following primary tabl
 - [ ] Add and remove stock from inventory instead of updating products (stock management)
 - [ ] Implement auto update using electron-updater
 - [ ] Create electron native "about" menu and show application description and version
-- [ ] In system settings create option to import and export database
+- [ ] In system settings create option to import and export database with assets like product images
 - [ ] App icon
 - [ ] Windows and MacOS production build
