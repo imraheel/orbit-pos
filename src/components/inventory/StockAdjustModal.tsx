@@ -6,6 +6,7 @@ import { X, PackagePlus, PackageMinus, Search, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
+import { useEscapeKey } from '../../hooks/useEscapeKey';
 
 interface StockAdjustModalProps {
   isOpen: boolean;
@@ -22,6 +23,9 @@ export const StockAdjustModal: React.FC<StockAdjustModalProps> = ({ isOpen, onCl
   const [note, setNote] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState('');
+
+  // Handle Escape key to close modal
+  useEscapeKey({ onClose, enabled: isOpen });
 
   useEffect(() => {
     if (isOpen) {

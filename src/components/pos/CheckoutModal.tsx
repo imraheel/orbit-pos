@@ -10,6 +10,7 @@ import { cn, calculateGrossPrice } from '../../lib/utils';
 import { useSettings } from '../../store/useSettings';
 import { Input } from '../ui/Input';
 import { getReceiptData } from '../receipt/Receipt';
+import { useEscapeKey } from '../../hooks/useEscapeKey';
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -34,6 +35,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
 
   const finalTotal = total();
   const change = amountReceived ? Number(amountReceived) - finalTotal : 0;
+
+  // Handle Escape key to close modal
+  useEscapeKey({ onClose, enabled: isOpen });
 
   const handlePhoneBlur = async () => {
     if (!phoneInput.trim()) return;

@@ -27,6 +27,7 @@ export const StockMovementList: React.FC<StockMovementListProps> = ({ onAdjustCl
   const [users, setUsers] = useState<Record<number, IUser>>({});
   const [search, setSearch] = useState('');
   const [filterProductId, setFilterProductId] = useState<number | 'all'>('all');
+  const [filterType, setFilterType] = useState<MovementType | 'all'>('all');
 
   const fetchData = async () => {
     const [allMovements, allProducts, allUsers] = await Promise.all([
@@ -49,7 +50,8 @@ export const StockMovementList: React.FC<StockMovementListProps> = ({ onAdjustCl
       product?.name.toLowerCase().includes(search.toLowerCase()) ||
       product?.barcode.includes(search);
     const matchesProduct = filterProductId === 'all' || m.productId === filterProductId;
-    return matchesSearch && matchesProduct;
+    const matchesType = filterType === 'all' || m.type === filterType;
+    return matchesSearch && matchesProduct && matchesType;
   });
 
   const productList = Object.values(products);
@@ -74,6 +76,16 @@ export const StockMovementList: React.FC<StockMovementListProps> = ({ onAdjustCl
             <option value="all">All Products</option>
             {productList.map(p => (
               <option key={p.id} value={p.id}>{p.name}</option>
+            ))}
+          </select>
+          <select
+            value={filterType}
+            onChange={(e) => setFilterType(e.target.value as MovementType | 'all')}
+            className="h-10 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 text-sm text-slate-600 dark:text-slate-100 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+          >
+            <option value="all">All Types</option>
+            {Object.entries(movementTypeConfig).map(([type, config]) => (
+              <option key={type} value={type}>{config.label}</option>
             ))}
           </select>
         </div>

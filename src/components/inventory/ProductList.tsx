@@ -12,6 +12,7 @@ import { cn, calculateGrossPrice } from '../../lib/utils';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
 import { useSettings } from '../../store/useSettings';
 import { printBarcode } from '../barcode/BarcodePrint';
+import { useEscapeKey } from '../../hooks/useEscapeKey';
 
 interface ProductImageProps {
   imageUrl: string
@@ -61,6 +62,10 @@ export const ProductList: React.FC = () => {
   // Delete Confirmation State
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState<IProduct | null>(null);
+
+  // Handle Escape key for modals
+  useEscapeKey({ onClose: () => setIsModalOpen(false), enabled: isModalOpen });
+  useEscapeKey({ onClose: () => setIsConfirmOpen(false), enabled: isConfirmOpen });
 
   const fetchData = async () => {
     const [allProducts, allCategories] = await Promise.all([

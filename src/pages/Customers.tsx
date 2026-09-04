@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { useSettings } from '../store/useSettings';
+import { useEscapeKey } from '../hooks/useEscapeKey';
 
 import { ConfirmDialog } from '../components/ui/ConfirmDialog';
 
@@ -24,6 +25,9 @@ export const Customers: React.FC = () => {
   // Delete Confirmation State
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [customerToDelete, setCustomerToDelete] = useState<ICustomer | null>(null);
+
+  // Handle Escape key for modals
+  useEscapeKey({ onClose: () => setIsModalOpen(false), enabled: isModalOpen });
 
   const fetchCustomers = async () => {
     const data = await db.customers.toArray();

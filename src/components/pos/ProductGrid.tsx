@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { db, IProduct, ICategory } from '../../db';
 import { Search, Tag, Package } from 'lucide-react';
 import { cn, calculateGrossPrice } from '../../lib/utils';
@@ -29,12 +29,23 @@ interface ProductGridProps {
   onProductSelect: (product: IProduct) => void;
 }
 
-export const ProductGrid: React.FC<ProductGridProps> = ({ onProductSelect }) => {
+export interface ProductGridRef {
+  focusSearch: () => void;
+}
+
+export const ProductGrid = forwardRef<ProductGridRef, ProductGridProps>(({ onProductSelect }, ref) => {
   const [products, setProducts] = useState<IProduct[]>([]);
   const [categories, setCategories] = useState<ICategory[]>([]);
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<number | 'all'>('all');
   const { currencySymbol } = useSettings();
+  const searchInputRef = React.useRef<HTMLInputElement>(null);
+
+  useImperativeHandle(ref, () => ({
+    focusSearch: () => {
+      searchInputRef.current?.focus();
+    }
+  }));
 
   useEffect(() => {
     const fetchData = async () => {
@@ -70,6 +81,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ onProductSelect }) => 
       {/* Search and Categories */}
       <div className="space-y-4 p-4 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/80 dark:backdrop-blur">
         <Input
+          ref={searchInputRef}
           icon={<Search size={18} />}
           placeholder="Search products by name or barcode..."
           value={search}
@@ -152,4 +164,4 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ onProductSelect }) => 
       </div>
     </div>
   );
-};
+});

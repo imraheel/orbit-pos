@@ -2,6 +2,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from './Button';
 import { AlertTriangle } from 'lucide-react';
+import { useEscapeKey } from '../../hooks/useEscapeKey';
 
 interface ConfirmDialogProps {
   isOpen: boolean;
@@ -26,6 +27,9 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   variant = 'default',
   isLoading = false,
 }) => {
+  // Handle Escape key to close dialog
+  useEscapeKey({ onClose: onCancel, enabled: isOpen });
+
   if (!isOpen) return null;
 
   return (

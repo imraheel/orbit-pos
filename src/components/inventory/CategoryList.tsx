@@ -6,6 +6,7 @@ import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { cn } from '../../lib/utils';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
+import { useEscapeKey } from '../../hooks/useEscapeKey';
 
 export const CategoryList: React.FC = () => {
   const [categories, setCategories] = useState<ICategory[]>([]);
@@ -16,6 +17,9 @@ export const CategoryList: React.FC = () => {
   // Delete Confirmation State
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState<ICategory | null>(null);
+
+  // Handle Escape key for category modal
+  useEscapeKey({ onClose: () => setIsModalOpen(false), enabled: isModalOpen });
 
   const fetchCategories = async () => {
     const data = await db.categories.toArray();

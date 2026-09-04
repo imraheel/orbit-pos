@@ -8,6 +8,7 @@ import { Badge } from '../components/ui/Badge';
 import { ConfirmDialog } from '../components/ui/ConfirmDialog';
 import { useSettings } from '../store/useSettings';
 import { cn } from '../lib/utils';
+import { useEscapeKey } from '../hooks/useEscapeKey';
 
 const roleLabels: Record<UserRole, string> = {
   admin: 'Administrator',
@@ -34,6 +35,9 @@ const UserManagement: React.FC = () => {
   const [search, setSearch] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<IUser | null>(null);
+
+  // Handle Escape key for user modal
+  useEscapeKey({ onClose: () => setIsModalOpen(false), enabled: isModalOpen });
 
   const [formData, setFormData] = useState({
     username: '',

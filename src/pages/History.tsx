@@ -7,6 +7,7 @@ import { Input } from '../components/ui/Input';
 import { useSettings } from '../store/useSettings';
 import { calculateGrossPrice } from '../lib/utils';
 import { getReceiptData } from '../components/receipt/Receipt';
+import { useEscapeKey } from '../hooks/useEscapeKey';
 
 export const History: React.FC = () => {
   const [orders, setOrders] = useState<IOrder[]>([]);
@@ -15,6 +16,9 @@ export const History: React.FC = () => {
   const [search, setSearch] = useState('');
   const [selectedOrder, setSelectedOrder] = useState<IOrder | null>(null);
   const { currencySymbol } = useSettings();
+
+  // Handle Escape key for order detail modal
+  useEscapeKey({ onClose: () => setSelectedOrder(null), enabled: selectedOrder !== null });
 
   const fetchOrders = async () => {
     const [allOrders, allCustomers, allUsers] = await Promise.all([

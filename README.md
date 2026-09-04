@@ -98,11 +98,12 @@ The application uses IndexedDB for local storage with the following primary tabl
 - [x] Generate and Print order receipt
 - [x] Add option to generate and print product barcode
 - [x] Add and remove stock from inventory instead of updating products (stock management)
-- [ ] Implement keyboard shortcuts
-	- escape to close any popup
-	- Cmd/Ctrl + Enter to open checkout popup
-	- Cmd/Ctrl + h to hold the order
-	- Cmd/Ctrl + space to focus search product field in pos page
+- [x] Implement keyboard shortcuts
+	- escape to close any popup or focus search product field in pos page
+	- Ctrl + Enter to open checkout popup
+	- Ctrl + h to hold the order
+	- keyboard number input in login pin screen
+- [x] Add filter Type added/removed/sale in stock management table just like product
 - [ ] Implement auto update using electron-updater
 - [ ] Create electron native "about" menu and show application description and version
 - [ ] In system settings create option to import and export database with assets like product images

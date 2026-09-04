@@ -7,17 +7,28 @@ import { Button } from '../ui/Button';
 import { Badge } from '../ui/Badge';
 import { useSettings } from '../../store/useSettings';
 import { calculateGrossPrice } from '../../lib/utils';
+import { useEscapeKey } from '../../hooks/useEscapeKey';
 
 interface CartSidebarProps {
   onCheckout: () => void;
+  onModalStateChange?: (isOpen: boolean) => void;
 }
 
-export const CartSidebar: React.FC<CartSidebarProps> = ({ onCheckout }) => {
+export const CartSidebar: React.FC<CartSidebarProps> = ({ onCheckout, onModalStateChange }) => {
   const { items, customer, setCustomer, updateQuantity, removeItem, clearCart, subtotal, tax, total, holdCart, heldCarts, resumeCart, deleteHeldCart } = useCart();
   const { currencySymbol } = useSettings();
   const [customers, setCustomers] = useState<ICustomer[]>([]);
   const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
   const [isHeldCartsOpen, setIsHeldCartsOpen] = useState(false);
+
+  // Handle Escape key for modals
+  useEscapeKey({ onClose: () => setIsHeldCartsOpen(false), enabled: isHeldCartsOpen });
+  useEscapeKey({ onClose: () => setIsCustomerModalOpen(false), enabled: isCustomerModalOpen });
+
+  // Notify parent when any modal state changes
+  useEffect(() => {
+    onModalStateChange?.(isHeldCartsOpen || isCustomerModalOpen);
+  }, [isHeldCartsOpen, isCustomerModalOpen, onModalStateChange]);
 
   useEffect(() => {
     db.customers.toArray().then(setCustomers);
@@ -153,6 +164,7 @@ export const CartSidebar: React.FC<CartSidebarProps> = ({ onCheckout }) => {
             disabled={items.length === 0}
             onClick={holdCart}
             variant="outline"
+            title="Hold Order (Ctrl+H)"
             className="col-span-1 h-14 border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 hover:border-amber-300 dark:border-amber-500/30 dark:bg-amber-500/20 dark:text-amber-400 dark:hover:bg-amber-500/30"
           >
             <PauseCircle size={20} />
@@ -160,6 +172,7 @@ export const CartSidebar: React.FC<CartSidebarProps> = ({ onCheckout }) => {
           <Button
             disabled={items.length === 0}
             onClick={onCheckout}
+            title="Checkout (Ctrl+Enter)"
             className="col-span-2 h-14 text-lg shadow-lg shadow-blue-500/20 dark:shadow-lg dark:shadow-blue-500/30"
           >
             <CreditCard size={20} className="mr-2" />
