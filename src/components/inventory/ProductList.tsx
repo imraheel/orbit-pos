@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { db, IProduct, ICategory } from '../../db';
+import { recordMovement } from '../../db/stockService';
+import { useAuth } from '../../store/useAuth';
 import { Plus, Edit2, Trash2, Search, X, Save, AlertCircle, Package, Printer } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../ui/Button';
@@ -38,6 +40,7 @@ export const ProductList: React.FC = () => {
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<number | 'all'>('all');
   const { currencySymbol } = useSettings();
+  const user = useAuth((state) => state.user);
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<IProduct | null>(null);
@@ -113,19 +116,36 @@ export const ProductList: React.FC = () => {
       finalImageUrl = await window.electronAPI.saveProductImage(base64, productId, extension);
     }
 
-    const payload = {
-      ...formData,
-      imageUrl: finalImageUrl,
-      price: Number(formData.price),
-      stock: Number(formData.stock),
-      categoryId: Number(formData.categoryId),
-      taxValue: Number(formData.taxValue),
-    } as IProduct;
-
     if (editingProduct && editingProduct.id) {
-      await db.products.update(editingProduct.id, payload);
+      const { stock: _stock, ...payloadWithoutStock } = {
+        ...formData,
+        imageUrl: finalImageUrl,
+        price: Number(formData.price),
+        categoryId: Number(formData.categoryId),
+        taxValue: Number(formData.taxValue),
+      } as IProduct;
+      await db.products.update(editingProduct.id, payloadWithoutStock);
     } else {
-      await db.products.add(payload);
+      const payload = {
+        ...formData,
+        imageUrl: finalImageUrl,
+        price: Number(formData.price),
+        stock: 0,
+        categoryId: Number(formData.categoryId),
+        taxValue: Number(formData.taxValue),
+      } as IProduct;
+      const newId = await db.products.add(payload);
+
+      const initialStock = Number(formData.stock) || 0;
+      if (initialStock > 0 && user) {
+        await recordMovement({
+          productId: newId as number,
+          type: 'addition',
+          quantity: initialStock,
+          userId: user.id!,
+          note: 'Initial stock on product creation',
+        });
+      }
     }
 
     setIsModalOpen(false);
@@ -372,16 +392,18 @@ export const ProductList: React.FC = () => {
                         </div>
                     )}
 
-                    <div className="space-y-1">
-                        <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Stock Level</label>
-                        <Input
-                            type="number"
-                            min="0"
-                            required
-                            value={formData.stock}
-                            onChange={(e) => setFormData({ ...formData, stock: Number(e.target.value) })}
-                        />
-                    </div>
+                    {!editingProduct && (
+                        <div className="space-y-1">
+                            <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Stock Level</label>
+                            <Input
+                                type="number"
+                                min="0"
+                                required
+                                value={formData.stock}
+                                onChange={(e) => setFormData({ ...formData, stock: Number(e.target.value) })}
+                            />
+                        </div>
+                    )}
                   </div>
                 </div>
 

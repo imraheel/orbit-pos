@@ -3,6 +3,7 @@ import { db } from './index';
 export const seedDatabase = async () => {
   const userCount = await db.users.count();
   console.log('Current user count in DB:', userCount);
+  let adminUserId = 1;
   if (userCount === 0) {
     // Default Admin
     await db.users.add({
@@ -12,6 +13,9 @@ export const seedDatabase = async () => {
       isActive: true,
     });
     console.log('Seeded default admin user');
+  } else {
+    const admin = await db.users.where('username').equals('admin').first();
+    if (admin) adminUserId = admin.id!;
   }
 
   const customerCount = await db.customers.count();
@@ -42,8 +46,7 @@ export const seedDatabase = async () => {
     const snackCat = await db.categories.where('name').equals('Snacks').first();
 
     if (bevCat && snackCat) {
-        await db.products.bulkAdd([
-        {
+        const colaId = await db.products.add({
             name: 'Cola 350ml',
             barcode: '1111',
             price: 1.50,
@@ -51,8 +54,9 @@ export const seedDatabase = async () => {
             categoryId: bevCat.id!,
             taxType: 'none',
             taxValue: 0,
-        },
-        {
+        });
+
+        const chipsId = await db.products.add({
             name: 'Chips BBQ',
             barcode: '2222',
             price: 2.00,
@@ -60,9 +64,33 @@ export const seedDatabase = async () => {
             categoryId: snackCat.id!,
             taxType: 'none',
             taxValue: 0,
-        }
+        });
+
+        // Seed initial stock movements
+        await db.stockMovements.bulkAdd([
+          {
+            productId: colaId as number,
+            type: 'addition',
+            quantity: 100,
+            stockBefore: 0,
+            stockAfter: 100,
+            userId: adminUserId,
+            note: 'Initial stock',
+            createdAt: new Date(),
+          },
+          {
+            productId: chipsId as number,
+            type: 'addition',
+            quantity: 50,
+            stockBefore: 0,
+            stockAfter: 50,
+            userId: adminUserId,
+            note: 'Initial stock',
+            createdAt: new Date(),
+          },
         ]);
-        console.log('Seeded products');
+
+        console.log('Seeded products and stock movements');
     }
   }
 };

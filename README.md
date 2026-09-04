@@ -97,7 +97,12 @@ The application uses IndexedDB for local storage with the following primary tabl
 	- Bookkeeper: Has read-only access to financial logs, end-of-day reports, and billing invoices without operational POS register access.
 - [x] Generate and Print order receipt
 - [x] Add option to generate and print product barcode
-- [ ] Add and remove stock from inventory instead of updating products (stock management)
+- [x] Add and remove stock from inventory instead of updating products (stock management)
+- [ ] Implement keyboard shortcuts
+	- escape to close any popup
+	- Cmd/Ctrl + Enter to open checkout popup
+	- Cmd/Ctrl + h to hold the order
+	- Cmd/Ctrl + space to focus search product field in pos page
 - [ ] Implement auto update using electron-updater
 - [ ] Create electron native "about" menu and show application description and version
 - [ ] In system settings create option to import and export database with assets like product images

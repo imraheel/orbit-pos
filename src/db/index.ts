@@ -68,6 +68,21 @@ export interface IOrder {
   note?: string;
 }
 
+export type StockMovementType = 'addition' | 'removal' | 'adjustment' | 'sale' | 'return';
+
+export interface IStockMovement {
+  id?: number;
+  productId: number;
+  type: StockMovementType;
+  quantity: number;
+  stockBefore: number;
+  stockAfter: number;
+  userId: number;
+  referenceId?: number;
+  note?: string;
+  createdAt: Date;
+}
+
 export interface ISettings {
   id?: number;
   key: string;
@@ -80,11 +95,22 @@ export class OrbitPOSDatabase extends Dexie {
   products!: Table<IProduct, number>;
   customers!: Table<ICustomer, number>;
   orders!: Table<IOrder, number>;
+  stockMovements!: Table<IStockMovement, number>;
   settings!: Table<ISettings, number>;
 
   constructor() {
     super('OrbitPOSDB');
     
+    this.version(7).stores({
+      users: '++id, username, pinCode',
+      categories: '++id, name',
+      products: '++id, name, categoryId, barcode',
+      customers: '++id, name, &phone',
+      orders: '++id, customerId, status, createdAt, userId',
+      stockMovements: '++id, productId, createdAt',
+      settings: '++id, &key'
+    });
+
     this.version(6).stores({
       users: '++id, username, pinCode',
       categories: '++id, name',

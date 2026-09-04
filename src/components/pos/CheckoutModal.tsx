@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useCart } from '../../store/useCart';
 import { db, IOrder, IOrderItem, ICustomer } from '../../db';
+import { recordBulkSaleMovements } from '../../db/stockService';
 import { useAuth } from '../../store/useAuth';
 import { X, CheckCircle2, Banknote, CreditCard, Loader2, User, UserPlus, Printer } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -93,6 +94,18 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
            }
       }
 
+      // Validate stock availability before creating order
+      for (const item of items) {
+        const product = await db.products.get(item.id!);
+        if (!product || product.stock < item.quantity) {
+          const name = product?.name || 'Unknown';
+          const available = product?.stock ?? 0;
+          alert(`Insufficient stock for "${name}". Available: ${available}, requested: ${item.quantity}`);
+          setIsProcessing(false);
+          return;
+        }
+      }
+
       const orderItems: IOrderItem[] = items.map(item => {
         const itemTax = item.taxType === 'percentage' 
           ? (item.price * item.quantity) * (item.taxValue / 100)
@@ -129,15 +142,12 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
       const orderId = await db.orders.add(order);
       const savedOrder = { ...order, id: orderId } as IOrder;
 
-      // 2. Update Stock Levels
-      for (const item of items) {
-        const product = await db.products.get(item.id!);
-        if (product) {
-          await db.products.update(item.id!, {
-            stock: Math.max(0, product.stock - item.quantity)
-          });
-        }
-      }
+      // 2. Update Stock Levels via stock service (with overselling validation)
+      const stockItems = items.map(item => ({
+        productId: item.id!,
+        quantity: item.quantity,
+      }));
+      await recordBulkSaleMovements(stockItems, user?.id!, orderId as number);
 
       // 3. Update Customer Total Spent
       if (orderCustomerId) {
