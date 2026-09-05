@@ -105,7 +105,7 @@ The application uses IndexedDB for local storage with the following primary tabl
 	- keyboard number input in login pin screen
 - [x] Add filter Type added/removed/sale in stock management table just like product
 - [ ] Implement auto update using electron-updater
-- [ ] Create electron native "about" menu and show application description and version
+- [x] Create electron native "about" menu and show application description and version
 - [ ] In system settings create option to import and export database with assets like product images
 - [ ] App icon
 - [ ] Windows and MacOS production build

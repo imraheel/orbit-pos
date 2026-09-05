@@ -38,9 +38,7 @@ export const Sidebar: React.FC = () => {
     >
       <div className="flex h-16 items-center px-6 border-b border-slate-200 dark:border-slate-800 min-w-[16rem]">
         <div className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-blue-500/30">
-            O
-          </div>
+          <img src="/logo.svg" alt="Orbit POS" className="h-8 w-8" />
           <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Orbit POS</h1>
         </div>
       </div>

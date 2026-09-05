@@ -3,6 +3,7 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import { setupImageHandlers } from './images.js'
 import { setupPrintHandlers } from './print.js'
+import { setupMenu } from './menu.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -56,6 +57,7 @@ app.on('activate', () => {
 
 app.whenReady().then(() => {
   createWindow()
+  setupMenu(win)
 
   setupImageHandlers()
   setupPrintHandlers()
